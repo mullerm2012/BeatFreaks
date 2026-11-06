@@ -32,6 +32,10 @@ how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
 | A.5 | Listening test: 20 transition pairs, owner rates, tune rules | DATA | Open | |
 | A.6 | Autopilot UI: next mix point on waveform, bar countdown, type badge | DATA + ALPHA | Open | |
 | A.8 | **Transition recipes**: blend, filter rise, echo out, loop roll, double drop, motorized spinback, riser, tempo ramp; saved as presets, recorded as lanes | ALPHA + DATA | Open | Owner: "insanely awesome" |
+| A.9 | **FX quality**: click/level/tail/tempo-lock tests in CI for every effect, latency+CPU benchmark, add missing FX (tape stop, riser, beat-masher) | ALPHA (tests) + DATA (sound) | Open | "work better than the other programs" |
+| A.10 | **From here to here**: mark a spot in A and a spot in B, Autopilot plans the phrase-correct transition between them | ALPHA | Open | Also drag in Arrange |
+| A.11 | **Crowd cam**: webcam motion energy + on-beat motion → floor heat → Smart Next crowd score | ALPHA | Open | Motion only, no faces, nothing saved, off by default |
+| A.12 | **AI songs for the floor**: ACE-Step makes key/BPM-matched edits when the floor is cold; owner approves | DATA + ALPHA | Open | Needs GPU; Pow Wow 2 |
 | A.7 | Optional AI pack: allin1 sections/downbeats (license, CPU/GPU) | DATA | Open | Research |
 
 ## Stage 0 — Foundation

@@ -107,3 +107,45 @@ the recipe name and a preview. Optional OBS scene flash or Stream Deck
 light on the drop.
 
 | A.8 | Transition recipe format + editor; first 6 recipes (blend, filter rise, echo out, loop roll, double drop, spinback) | ALPHA (engine) + DATA (sound design, visuals) |
+
+## Owner, 2026-11-06 00:34 — effects, "from here to here", camera, own songs
+
+### FX that beat the others (A.9)
+- Every FX gets a test in CI: no clicks, no level jumps or clipping on/off,
+  tails end cleanly, and the tempo-synced ones stay locked to the beat grid.
+- Benchmark: latency and CPU per FX on the owner's PC, from the hardware
+  test page.
+- Must-haves: filter, echo/delay (beat-synced, freeze), reverb, flanger,
+  phaser, gate/stutter, beat-masher/loop roll, bit crush, brake/spinback,
+  noise riser, tape stop. Mixxx already has most; we tune them and add the
+  missing ones. All are GPL/our own code, not copied.
+- F1 pads and S4 FX knobs are mapped, and each FX move is recorded as a lane.
+
+### "From here to here" (A.10)
+Mark any two spots: "this point in deck A" → "that point in deck B"
+(a drop, breakdown, vocal or any bar). Autopilot plans a phrase-correct
+transition between exactly those spots. If it can't land on the phrase it
+says so and suggests the nearest bar that works. You can also drag it on
+the Arrange timeline.
+
+### Crowd cam (A.11)
+A webcam or phone pointed at the floor. On the PC, BeatFreaks measures
+**how much the floor is moving** (motion energy) and whether that motion is
+on the beat (motion pulses vs BPM). It turns this into a "floor heat"
+score per track, fed into Smart Next's crowd score (N.4) alongside the
+manual "crowd hot/cold" pad.
+
+Privacy by design: it only measures motion and does not use face
+recognition or identify anyone. Frames stay in memory and are never saved
+or uploaded. It is off by default, with a visible "crowd cam on" light. The
+owner is responsible for venue rules and notices.
+
+Tech: OpenCV (Apache-2.0) optical flow / frame difference, CPU-cheap,
+runs on-device.
+
+### AI songs for the floor (A.12, with Pow Wow 2)
+When the floor is cold, Studio/AI (ACE-Step, open license) can generate an
+edit or a short tool track in the right key and BPM, based on what the
+floor liked tonight. It renders ahead of time in the background and joins
+the queue like any track, labelled "AI-made". The owner approves before it
+plays (setting), and it needs a capable GPU (open question to the owner).

@@ -363,3 +363,16 @@ spinback transition.
 recipes and the on-waveform transition preview look for A.8.
 
 ALPHA OVER
+
+## 2026-11-06 06:40 UTC — ALPHA (Claude Code)
+
+**Did:** The owner asked for more: FX that work better than other
+programs, "from here to here" transitions, a crowd camera that reads the
+dance floor, and AI songs that bring people onto the floor. Added
+A.9–A.12 to the board and the details to `briefs/autopilot.md`. The crowd
+cam is motion-only: no face recognition, nothing saved, off by default.
+
+**For DATA:** A.9 sound side (which FX need tuning?) and A.12 with your
+Pow Wow 2 ACE-Step work.
+
+ALPHA OVER
