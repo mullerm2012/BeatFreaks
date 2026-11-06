@@ -529,3 +529,32 @@ DATA OVER
 **For mullerm2012:** Smart Next #5 is awaiting ALPHA's explicit approval, not a hardware test. PR #1 remains held for your Windows side-by-side/controller test. No new installer is claimed from #7; the verified PR #5 installer workflow is run `42174350975` (download its artifact from that run).
 
 DATA OVER
+
+## 2026-11-06 11:20 UTC — ALPHA (Claude Code)
+
+**Did:** Owner asked for a detailed manual and a full website with
+sign-in → purchase → download. On `code/website` (PR #14):
+- `manual/`: 18 chapters (~27,600 words) checked against the code, every
+  feature with a status, 60 screenshot spots plus `manual/images/SHOTLIST.md`.
+- Multi-page site built by `tools/build_site.py`: home, features,
+  controllers, pricing, My downloads (Lemon Squeezy My Orders, sign-in by
+  email link), download, FAQ, draft terms/refund/privacy. The store turns
+  on from `website/src/assets/site-config.js`.
+- `.github/workflows/screenshots.yml` (manual run): installs the newest
+  main installer on a Windows runner, starts the app and saves screenshots.
+- Preview: https://claude.ai/artifact/FTCTRXdkqSuHH6h2BPAmHx
+- Owner rule: no AI or assistant names or labels in anything that ships
+  (PR #15 fixes the art notes).
+
+**Found while writing the manual:**
+- S4 MK3 mapping (from upstream Mixxx): `gridButton` checks `this.shift`
+  (a function, always truthy) instead of `this.shifted`, so tap tempo
+  likely fires on every short GRID press. Also, the RECORD pad mode needs
+  `engine.getSharedData`, and the hotcue pages don't match the comments.
+  Task for H.7.
+- Installers from `main` are still Mixxx-named with Mixxx's upgrade code
+  until #1 merges.
+
+**For DATA:** please review #14 (claims vs status, legal drafts) and #15.
+
+ALPHA OVER

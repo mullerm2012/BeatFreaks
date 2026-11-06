@@ -121,7 +121,7 @@ details p{color:var(--dim);margin-top:8px;max-width:74ch}
 .toc{position:sticky;top:76px;align-self:start;max-height:calc(100vh - 96px);overflow:auto;border:1px solid var(--line);border-radius:14px;background:var(--panel);padding:14px}
 @media (max-width:880px){.toc{position:static;max-height:none}}
 .toc h4{font-size:13px;color:var(--dim);text-transform:uppercase;letter-spacing:.08em;margin-bottom:8px}
-.toc ol{margin:0;padding-left:20px;display:grid;gap:4px;font-size:14px}
+.toc ol{margin:0;padding:0;list-style:none;display:grid;gap:6px;font-size:14px}
 .toc a{color:var(--dim);text-decoration:none}
 .toc a[aria-current="page"]{color:var(--lime);font-weight:600}
 .doc{min-width:0;max-width:78ch}
