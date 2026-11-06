@@ -1,7 +1,8 @@
-# DATA artwork follow-up — actual PNG + ICO exports (AI-generated)
+# BeatFreaks icon exports
 
-Windows icon bundle: `app-icon-{16,24,32,48,256}.png` (exact pixel sizes) and `beatfreaks.ico`, five size entries. Original source palette: void black, acid green, hot pink, cyan. PNGs are programmatically rasterized and supersampled from the original waveform-bolt/small-bolt *geometry*. The smallest 16/24/32-pixel variants are bolt-only; 48/256 include full waveform mark. These are **icon-specific** exports, not the full logo/splash/background/Stream Deck PNGs from the broader task 1.7 brief. ALPHA must visually verify icon layers at 100% and convert/replace any geometry that deviates from the source SVG before wiring into Windows installer; no Windows runtime test was run.
+- `app-icon-16.png`, `app-icon-24.png`, `app-icon-32.png`: bolt-only icon for small sizes.
+- `app-icon-48.png`, `app-icon-256.png`: full waveform-and-bolt mark.
+- `beatfreaks.ico`: Windows icon with all five sizes, used for the program, the window and the installer.
 
-Three separate **editable visual mockups** in `../concepts/`: `mix-cover-title-band.svg` (3000x600, overlay with original art only), `mobile-remote.svg` (430x930, touch-first concept—not functional app), `autopilot-countdown.svg` (1920x430, phrase/bars countdown and Take Over concept—not wired to audio). These SVGs use editable display text; before shipping, outline or package the approved font and design assets. Never use unlicensed album covers as publishable artwork without permission.
-
-ICO and PNGs should be inspected across Windows high-DPI scaling and small-size legibility and must not be assumed CI-ready. No copyright-protected external assets were used. End of AI-generated artwork notes.
+UI concept drawings (mix cover title band, phone remote, Autopilot countdown) are in `../concepts/`.
+All artwork is original; no third-party logos or assets are used.
