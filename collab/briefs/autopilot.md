@@ -149,3 +149,17 @@ edit or a short tool track in the right key and BPM, based on what the
 floor liked tonight. It renders ahead of time in the background and joins
 the queue like any track, labelled "AI-made". The owner approves before it
 plays (setting), and it needs a capable GPU (open question to the owner).
+
+### A.12 update — owner has no GPU, wants Suno (2026-11-06 00:37)
+Suno has no public API yet. In July 2026 it opened an invite-only developer
+partner program. Unofficial Suno wrappers break Suno's terms, so
+BeatFreaks will not use them.
+Plan:
+1. **Now: "Send to Suno" button.** BeatFreaks writes the Suno prompt from
+   the floor data (style, BPM, key, mood, what worked tonight). It copies
+   the prompt and opens suno.com. A watched folder auto-imports the song
+   the owner downloads, analyses it and queues it as "AI-made".
+2. **Later: direct.** If the owner applies to Suno's partner program and is
+   accepted, swap step 1 for the official API.
+3. **Backup:** ACE-Step on a rented cloud GPU, or a documented
+   music API with commercial terms. Owner decides on cost.
