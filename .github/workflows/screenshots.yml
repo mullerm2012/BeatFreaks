@@ -7,8 +7,11 @@
 #   - the process is still running and has a visible main window,
 #   - the window is captured with PrintWindow (works without a desktop),
 #     and an image that is almost one colour is rejected as blank.
-# Pictures that pass go to the "screenshots-verified" artifact. Nothing
-# goes into the manual until a person has looked at them.
+#   - the build is labelled from the MSI product and the program itself:
+#     "beatfreaks" only when both say BeatFreaks, otherwise
+#     "pre-rebrand-mixxx" (test captures, never published as BeatFreaks UI).
+# Pictures that pass go to "screenshots-verified-<label>" with IDENTITY.txt.
+# Nothing goes into the manual until a person has looked at them.
 name: BeatFreaks screenshots
 
 on:
@@ -74,8 +77,25 @@ jobs:
           }
           $exe = $candidates[0]
           $info = $exe.VersionInfo
-          Write-Host "Program: $($exe.FullName)  product='$($info.ProductName)' version='$($info.ProductVersion)'"
+          # What the MSI says it installed ("Product: <name> -- Installation completed successfully.")
+          $msiLine = Select-String -Path install.log -Pattern 'Product: (.+?) --' | Select-Object -Last 1
+          $msiProduct = if ($msiLine) { $msiLine.Matches[0].Groups[1].Value } else { "" }
+          Write-Host "MSI product='$msiProduct'  program=$($exe.FullName)  exe product='$($info.ProductName)' version='$($info.ProductVersion)'"
+          # Label the build honestly. Only a build where both the MSI and the
+          # program say BeatFreaks counts as BeatFreaks-branded.
+          if ($msiProduct -match 'BeatFreaks' -and ($info.ProductName -match 'BeatFreaks' -or $exe.Name -match '^beatfreaks')) {
+            $label = "beatfreaks"; $brand = "BeatFreaks"
+          } elseif ($msiProduct -match 'Mixxx' -or $info.ProductName -match 'Mixxx') {
+            $label = "pre-rebrand-mixxx"; $brand = "Mixxx"
+          } else {
+            throw "Cannot tell which product was installed (MSI '$msiProduct', exe '$($info.ProductName)')"
+          }
+          Write-Host "Build label: $label"
+          New-Item -ItemType Directory -Force shots | Out-Null
+          "msi_product=$msiProduct`nexe=$($exe.FullName)`nexe_product=$($info.ProductName)`nexe_version=$($info.ProductVersion)`nlabel=$label`ninstaller_run=${{ steps.find.outputs.run_id }}" | Set-Content shots\IDENTITY.txt
           "APP=$($exe.FullName)" >> $env:GITHUB_ENV
+          "LABEL=$label" >> $env:GITHUB_ENV
+          "BRAND=$brand" >> $env:GITHUB_ENV
 
       - name: Start the app and take checked screenshots
         shell: pwsh
@@ -93,6 +113,7 @@ jobs:
           }
           "@
           New-Item -ItemType Directory -Force shots, rejected | Out-Null
+          Write-Host "Expecting $env:BRAND windows (label $env:LABEL)"
           $script:good = 0
 
           function Test-Content([System.Drawing.Bitmap]$bmp) {
@@ -123,14 +144,18 @@ jobs:
             $g.ReleaseHdc($hdc); $g.Dispose()
             $n = Test-Content $bmp
             $title = $proc.MainWindowTitle
-            if ($ok -and $n -ge 12) {
+            # The window must belong to the product we installed (dialogs on
+            # first run may have their own titles, so only reject a clash).
+            $other = if ($env:BRAND -eq "BeatFreaks") { "Mixxx" } else { "BeatFreaks" }
+            $titleOk = -not ($title -match $other -and $title -notmatch $env:BRAND)
+            if ($ok -and $n -ge 12 -and $titleOk) {
               $bmp.Save("shots\$name.png", [System.Drawing.Imaging.ImageFormat]::Png)
               "$name.png`t$w x $hgt`tcolours=$n`ttitle=$title" | Add-Content shots\CHECK.txt
               $script:good++
               Write-Host "OK $name ($w x $hgt, $n colours, '$title')"
             } else {
               $bmp.Save("rejected\$name.png", [System.Drawing.Imaging.ImageFormat]::Png)
-              Write-Host "::warning::$name rejected (PrintWindow=$ok, colours=$n)"
+              Write-Host "::warning::$name rejected (PrintWindow=$ok, colours=$n, title='$title')"
             }
             $bmp.Dispose()
           }
@@ -161,7 +186,7 @@ jobs:
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: screenshots-verified
+          name: screenshots-verified-${{ env.LABEL || 'unknown' }}
           path: |
             shots/
             install.log
