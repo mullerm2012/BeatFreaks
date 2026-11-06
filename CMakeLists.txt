@@ -1267,6 +1267,7 @@ add_library(
   src/beatfreaks/diagnostics/bflog.cpp
   src/beatfreaks/diagnostics/diagnosticreport.cpp
   src/beatfreaks/diagnostics/hardwaretest.cpp
+  src/beatfreaks/library/smartnext.cpp
   src/beatfreaks/project/bfproject.cpp
   src/database/mixxxdb.cpp
   src/database/schemamanager.cpp
@@ -2884,6 +2885,7 @@ if(BUILD_TESTING)
     src/test/beatfreaks/automationlane_test.cpp
     src/test/beatfreaks/automationrecorder_test.cpp
     src/test/beatfreaks/bfproject_test.cpp
+    src/test/beatfreaks/smartnext_test.cpp
     src/test/beatgridtest.cpp
     src/test/beatmaptest.cpp
     src/test/beatstest.cpp
