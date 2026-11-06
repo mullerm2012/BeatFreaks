@@ -52,7 +52,11 @@ ctest --test-dir build-core --output-on-failure
 It needs Qt 6 (Core) and GoogleTest. The core is also part of the normal Mixxx
 build (`mixxx-lib`) and test runner (`mixxx-test`).
 
-The full app builds exactly like Mixxx; see `CONTRIBUTING.md`. On GitHub, the
-existing "Pull request or branch build" workflow produces the Windows
-installer as the `windows-win64` artifact for every pushed branch other than
-`main`.
+The full app builds exactly like Mixxx; see `CONTRIBUTING.md`.
+
+On GitHub, every push to `main` runs **BeatFreaks Windows installer**
+(`.github/workflows/beatfreaks-windows.yml`, which reuses Mixxx's
+`build.yml` trimmed to Windows x64). The `.msi` installer appears under
+Actions → BeatFreaks Windows installer → latest run → Artifacts.
+Mixxx's other CI workflows (Linux, macOS, Android, release publishing) are
+removed in this fork.
