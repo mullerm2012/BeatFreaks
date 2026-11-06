@@ -51,6 +51,17 @@ how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
 | M.4 | Song requests: the crowd scans a QR, asks for a song, it lands in the DJ's request list (DJ approves) | ALPHA | Open | |
 | M.5 | Full BeatFreaks on iPad / Android tablet | — | Later | Mixxx has experimental iOS and Android builds; needs a touch UI; phone audio latency is a risk |
 
+## Cloud — save, sync and play from the cloud (owner, 2026-11-06)
+
+"Save mixes on Google Drive… save and retrieve and play back from the cloud… use all the music platforms."
+
+| # | Task | Owner | State | Notes |
+| --- | --- | --- | --- | --- |
+| C.1 | **Cloud folder**: recordings, tracklists, covers, `.bfproj`, crates/settings backup auto-saved into a chosen folder (Google Drive for desktop, OneDrive, Dropbox) | ALPHA | Open | No API keys needed; the desktop sync app uploads |
+| C.2 | **Play from the cloud**: library can include the Drive folder; "Make available offline" button before a gig; warning if a queued song is cloud-only and the internet is down | ALPHA | Open | Gig safety first |
+| C.3 | Direct Google Drive API (upload without the desktop app, share link to a mix) | — | Later | Needs Google OAuth app verification |
+| C.4 | Streaming services (Beatport/Beatsource, SoundCloud, TIDAL): only via their official DJ-partner programs; Spotify does not allow DJ mixing | Owner applies, ALPHA builds | Later | No unofficial scrapers |
+
 ## Stage 0 — Foundation
 
 | # | Task | Owner | State | Notes |
