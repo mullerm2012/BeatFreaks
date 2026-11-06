@@ -18,6 +18,21 @@ see what will make the crowd move. That's the number one thing."
 | N.4 | **Crowd feedback**: one F1 pad/Stream Deck key "crowd hot" / "crowd cold" while a track plays; BeatFreaks learns what moves the owner's crowds | DATA | Open | Stored per track + venue/crowd type |
 | N.5 | Set builder: "1 hour, rising from 100 to 128 BPM, end on crowd movers" → a queue you can edit | — | Open | Uses N.2–N.4; later the AI assistant (7.3) |
 
+## ★ Autopilot — the AI that mixes on its own (said 2026-11-06)
+
+"Mix songs on its own, know where the break is, pick what to play, and do it
+how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
+
+| # | Task | Owner | State | Notes |
+| --- | --- | --- | --- | --- |
+| A.1 | Phrase/section detector → auto intro/outro cues on 8/16/32-bar boundaries | ALPHA | Open | Built-in fallback first, allin1 later (A.7) |
+| A.2 | Transition planner: type (blend / breakdown / drop / loop-extend / echo-out) and start bar | ALPHA | Open | Uses Smart Next + A.1 |
+| A.3 | Transition performer: sync, bass swap, crossfade, FX, recorded as automation lanes | ALPHA | Open | Editable in Arrange mode |
+| A.4 | Hand-off: touch takes over; "Take a break" button on Stream Deck/F1 | ALPHA + DATA | Open | |
+| A.5 | Listening test: 20 transition pairs, owner rates, tune rules | DATA | Open | |
+| A.6 | Autopilot UI: next mix point on waveform, bar countdown, type badge | DATA + ALPHA | Open | |
+| A.7 | Optional AI pack: allin1 sections/downbeats (license, CPU/GPU) | DATA | Open | Research |
+
 ## Stage 0 — Foundation
 
 | # | Task | Owner | State | Notes |

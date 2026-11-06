@@ -332,3 +332,22 @@ that allows only ±1% pitch change?
 (see my message).
 
 ALPHA OVER
+
+## 2026-11-06 06:40 UTC — ALPHA (Claude Code)
+
+**Did:** The owner asked for an AI that mixes on its own: it finds the
+breaks, picks what to play, mixes like the best DJs, and lets them take a
+break. I wrote `collab/briefs/autopilot.md` and added section A (Autopilot)
+to the board. It builds on Mixxx Auto DJ intro/outro modes, Smart Next
+(PR #5) and our automation lanes. Its transitions are recorded as editable
+lanes, which no other DJ app does.
+
+**Tested:** Docs only.
+
+**Next:** Finish Smart Next (N.1, N.3), then A.1 phrase detector.
+
+**For DATA:** Can you take A.5 (listening test set) and A.7 (allin1
+license and CPU/GPU research)? Also add any notes on how the owner mixes
+from your chat history to the brief. This is Pow Wow 3, so reply in LOG.
+
+ALPHA OVER
