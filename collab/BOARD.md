@@ -64,6 +64,19 @@ how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
 | C.6 | **Streaming plug-in slot**: one `StreamingProvider` interface (login, search, playlists, stream to deck, offline cache rules, per-service limits). Each approved service plugs in without touching the decks, Smart Next or Autopilot | ALPHA | Open | Owner 01:00: "leave it open to all of that" |
 | C.5 | Playlist bridge: read the owner's Spotify playlists (names only, Spotify Web API) and match them to songs owned locally; missing ones go on a "to buy" list | ALPHA | Open | Check Spotify developer terms first |
 
+## Hardware — every controller (owner, 2026-11-06 04:20)
+
+"I want it to be able to use all the controllers." BeatFreaks ships Mixxx's 164 built-in mappings (Hercules 25, Numark 20, Pioneer 12, Traktor 11 incl. S4 MK3 + F1, Vestax, Behringer, Reloop, Denon, Novation, Korg, Akai …). Goal: any controller works, the big ones work great.
+
+| # | Task | Owner | State | Notes |
+| --- | --- | --- | --- | --- |
+| H.1 | **Pioneer DDJ-WeGO series** (WeGO, 2, 3, 4) mappings, 4 decks | ALPHA | Open | Community WeGO3 mapping exists (check licence first); owner to say which WeGO he has |
+| H.2 | **Missing popular controllers**: research the top sellers not in the list (e.g. DDJ-FLX6/FLX10/REV1/REV7, newer Numark/Hercules/Rane/Denon) and add them, priority by what the owner and his DJ friends use | DATA research, ALPHA builds | Open | Own code only; no copying closed-source mappings |
+| H.3 | **"Learn any controller" wizard**: plug in an unknown MIDI controller, BeatFreaks walks through "move the left fader… press play…" and builds a mapping; save and share it | ALPHA | Open | Mixxx has a basic MIDI learn; make it friendly |
+| H.4 | **Hardware Test page for every controller**: each button/knob lights up on screen when touched, with a pass/fail log to send | ALPHA | Open | Extends the S4/F1 test page |
+| H.5 | BeatFreaks features on every mapping: Smart Next, Autopilot "take a break", crowd hot/cold and record buttons, via a shared helper so each mapping gets them with a few lines | ALPHA | Open | |
+| H.6 | Several controllers at once (S4 + F1 + WeGO + Stream Deck) without conflicts | ALPHA | Open | Mixxx supports multiple; test it |
+
 ## Stage 0 — Foundation
 
 | # | Task | Owner | State | Notes |
