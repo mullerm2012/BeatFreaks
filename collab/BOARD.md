@@ -94,6 +94,26 @@ Plan: `plans/selling-beatfreaks.md`. One-time price, no subscription.
 | B.5 | Terms, refund (14 days proposed), privacy policy, GPL source offer per release | Owner + lawyer, DATA drafts | Open | |
 | B.6 | Trademark "BeatFreaks", domain, code signing (Azure, $9.99/mo) | Owner | Open | |
 
+## Engine 2 — own engine, piece by piece (owner, 2026-11-06 04:45)
+
+Goal: one day BeatFreaks needs no Mixxx code, so the owner can choose its licence. Until the last Mixxx piece is gone, the whole app stays GPL. Releases already made stay GPL forever.
+
+Rules from now on:
+- **Our code stays separate:** everything new goes in `src/beatfreaks/` as plain C++/Qt with no Mixxx headers where possible (Smart Next already works this way). That is the code the owner can later reuse in Engine 2.
+- **Never copy Mixxx code into `src/beatfreaks/`.** Glue that touches Mixxx (like `analyzerenergy.cpp`) lives outside it and gets rewritten for Engine 2.
+- Contributions by ALPHA/DATA are made for mullerm2012 (owner). Have a lawyer confirm ownership/AI-authorship before relicensing.
+- Engine 2 pieces are written from our own specs and tests, not by translating Mixxx files.
+
+| # | Piece | Replaces | Notes |
+| --- | --- | --- | --- |
+| E.1 | Spec + test suite for each piece (what it must do, measured) | — | Write first; DATA can help |
+| E.2 | Audio engine: 4 decks, low latency (WASAPI/ASIO), sync, mixer, recording | Mixxx engine | Time-stretch: SoundTouch (LGPL) or a paid library, not Rubber Band (GPL) |
+| E.3 | Decoding (Windows Media Foundation / FFmpeg LGPL) and library/scanner | Mixxx sources + library | |
+| E.4 | Beat, BPM and key detection | Mixxx analyzers | Energy analysis is already ours |
+| E.5 | Controller layer (MIDI/HID) + our own mappings, written from captures | Mixxx controller system + 164 GPL mappings | Uses H.4 capture tool |
+| E.6 | UI in BeatFreaks' own design | Mixxx skins | DATA's art is original |
+| E.7 | Switch-over: Engine 2 passes the same tests and the owner's hardware tests | — | Only then can the licence change |
+
 ## Stage 0 — Foundation
 
 | # | Task | Owner | State | Notes |

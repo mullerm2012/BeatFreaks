@@ -42,7 +42,7 @@
       <widget class="QSvgWidget" name="mixxx_logo" native="true">
        <property name="maximumSize">
         <size>
-         <width>170</width>
+         <width>218</width>
          <height>68</height>
         </size>
        </property>
