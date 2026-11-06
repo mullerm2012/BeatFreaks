@@ -99,6 +99,33 @@ library. Plan via Pow Wow first.
   SoundCloud" with the tracklist. Check each service's upload API and terms
   before building.
 
-## 7. From ChatGPT history (DATA: add here)
+## 7. From ChatGPT history — DATA research (November 2026)
 
--
+These findings distinguish **owner requests** from **AI proposals**. History entries are not automatic approval for new features.
+
+### Continuous DJ set workflow / beat-matching
+
+- **138 BPM remains constant** across the user's current original DJ Badboy MJ club mix; every track should stay upbeat and danceable with a **clean beatmatched instrumental intro, instrumental mixing breaks, and DJ-friendly outro** so transitions can run smoothly, not cinematic/slow openings. *(owner, November 2026)*
+- In the same mix the owner explored **Jersey Club**, Chicago/Detroit juke and ghetto house, dancehall and Jamaican fast vocals, hip-hop, 1970s disco-funk, Portuguese club music, Spanglish hooks, and bass-heavy club tracks. The producer workflow changes genres without sacrificing set continuity. *(owner, various 2025–2026 ChatGPT chats)*
+- Owner explicitly **rejected scratching for particular later tracks** despite liking scratch-heavy Chicago-style intros in another portion of the mix. Scratching must be a *per-track/set option*, never a hard-coded universal requirement. *(owner, November 2026)*
+- Earlier ChatGPT generated song prompts specifying fixed-tempo 138 BPM, DJ-friendly intros/outros and 4/8/16-bar instrumental transition zones. Treat these as possible **Suno prompt/export templates**, not a product decision. *(earlier AI suggestion)*
+
+### Production + DJ software, hardware and visual goals
+
+- The owner wants **an ultimate, polished DJ program**, with realistic controller layout/behavior and a high-end visual feel; asked whether **FL Studio (Fruity Loops)** could also be integrated into the workflow. Integration should be investigated for legal/export/interoperability options rather than copying FL Studio's interface or shipping its components. *(owner, November 5, 2026)*
+- The owner wants ALPHA and DATA to use the ACN-style iterative review/test cycle, including real Windows/controller testing and back-and-forth GitHub collaboration; QA should distinguish static analysis from real hardware tests. *(owner, November 5, 2026)*
+- Previous AI-authored `dj_badboy_mj_ai*.py` and `booth_brain_precision_mix_studio.py` apps explored folder scanning, BPM/downbeat/key analysis, duplicate prevention, phrase-aligned bass swaps, vocal-safe transitions, rendered WAV mixes, export and multi-genre modes. These are **AI-built prototypes/ideas**, not claims that BeatFreaks already implements them. *(earlier AI suggestion / prior AI-produced artifacts)*
+- Another earlier AI-built prototype, `dj_coach_by_dj_badboy_mj_v3.html`, proposed picking the **next three songs** from current BPM, target BPM, genre, recent play history and tolerance; complements planned Transition Coach. *(earlier AI suggestion)*
+
+### Music creation / Suno
+
+- The owner repeatedly writes original DJ Badboy MJ songs through Suno, using separate **lyrics / production style / title** fields and correcting length limits; likes punchy sub-bass, danceable grooves, strong drops, differentiated lead vocals and genuine instrumental mixing sections. *(owner, 2025–2026)*
+- The owner requested original game soundtracks with danceable EDM, code-red cues and occasional DJ Badboy MJ branding, plus Dr. Marvin lines “You got this” and “I got you”; this is a creative use case, not necessarily a DJ-player feature. *(owner, November 2026)*
+- Prior assistant-proposed Suno titles, genres, lyric arrangements and prompts were **creative suggestions**, not owner-authored specifications or approved BeatFreaks UI requirements. *(earlier AI suggestion)*
+
+### Home PC / remote music playback
+
+- On November 5 the owner asked for a **website/app to connect to and play music stored on the Windows PC**, consistent with ALPHA's notes on DJ Cloud Mirror and planned BeatFreaks Link. The user requirement is remote browse/play, while private tunnel, pinning gig crates offline and path mirroring are **earlier AI design suggestions** (see §4). *(owner request + earlier AI suggestions, distinguished)*
+- Preserve privacy and reliable local copies for live sets: explore remote listening through authenticated access, but never rely on internet streaming to keep a set playing. *(earlier AI suggestion, not an owner-approved design)*
+
+**Potential board follow-ups (proposal only):** a 138 BPM continuous-set/Suno export preset; per-track scratch toggle; FL Studio interchange feasibility study (audio stems/MIDI/standard formats); recorded-set QA harness; and BeatFreaks Link phone/browser playback.
