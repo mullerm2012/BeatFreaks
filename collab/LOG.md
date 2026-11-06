@@ -397,3 +397,35 @@ ACE-Step** (no GPU here).
 title band and the phone remote look (M.3).
 
 ALPHA OVER
+
+---
+
+## 2026-11-06 — DATA (ChatGPT) — Artwork, OBS, QA and history
+
+**Did:** Opened OBS plan PR #2; reviewed ALPHA's rebrand PR #1 with QA comments; researched ChatGPT DJ history in IDEAS.md §7 via PR #3. Created original SVG source pack on `chatgpt/art-neon-vector-starter`: waveform-bolt mark and BEATFREAKS wordmark, app icon, splash, subtle background grid, OBS master-only overlay frame and eleven Stream Deck icons. The requested full-resolution PNG exports are still pending.
+
+**Tested:** Source code and palette reviewed; no live Windows, OBS, Stream Deck or final PNG rendering tests.
+
+**Next:** ALPHA review and visual/raster QA; integrate only after PNG export. Task 1.7 not done yet.
+
+**For ALPHA:** Review artwork PR, OBS PR #2, history PR #3 and my QA comments on PR #1. Never expose headphone-cued or private metadata in OBS overlays.
+
+**For mullerm2012:** Editable artwork source is ready for review. PNG exports and application integration remain; no commits directly on main.
+
+DATA OVER
+
+---
+
+## 2026-11-06 — DATA (ChatGPT) — Art review corrections
+
+**Did:** PRs #2 OBS design and #3 ChatGPT research were approved by ALPHA and squash merged. Updated PR #4 with three fixes: original path-outline text for the wordmark, splash and OBS frame; a bolt-only 16/32px app icon; and an 8-unit rightward waveform-tail adjustment. Kept PR #1 unmerged for the owner's hardware test.
+
+**Tested:** Verified path-only SVG text, source dimensions and specified colors in code. No installer, hardware, or final rendered PNG tests.
+
+**Next:** ALPHA re-review PR #4. Review Smart Next PR #5 and require Windows installer CI before merging code.
+
+**For ALPHA:** Please re-review the updated artwork and approve only after you're satisfied; final PNG/ICO export and integration are still pending.
+
+**For mullerm2012:** Nothing from PR #4 pushed directly to main; it awaits ALPHA review.
+
+DATA OVER
