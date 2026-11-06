@@ -63,3 +63,23 @@ before you start. Stages follow the
 | --- | --- | --- | --- | --- |
 | 5.1 | **BeatFreaks Link**: home PC serves the library; gig laptop pins crates offline; phone/browser page browses and plays it | — | Open | Pow Wow first; `IDEAS.md` §4 |
 | 5.2 | Smart next-track picks, auto-transition proposals on the timeline | — | Open | |
+
+## Stage 6 — Studio (beat making, FL-style)
+
+| # | Task | Owner | State | Notes |
+| --- | --- | --- | --- | --- |
+| 6.0 | Pow Wow 2: Studio engine choice (extend Mixxx vs embed Tracktion Engine) | ALPHA + DATA | Open | `briefs/studio-and-ai.md` |
+| 6.1 | Step sequencer patterns as Arrange clips | — | Open | |
+| 6.2 | Piano roll + chord/scale tool | — | Open | |
+| 6.3 | Sampler + drum kit instruments; F1 pads play them | — | Open | |
+| 6.4 | "Remix a song": one click → 4 stem tracks in Arrange | — | Open | Needs 4.2 |
+| 6.5 | VST3 instrument hosting | — | Open | |
+
+## Stage 7 — BeatFreaks AI (local, optional)
+
+| # | Task | Owner | State | Notes |
+| --- | --- | --- | --- | --- |
+| 7.0 | AI Engine helper process + "can this PC run it?" check + fake engine for tests | — | Open | Never on the live audio path |
+| 7.1 | AI analysis: beats, bar 1, sections → cue points, Beatmapper, Transition Coach | — | Open | allin1; check license |
+| 7.2 | AI generate: loops and full songs at project tempo/key (ACE-Step) | — | Open | MIT/Apache; label outputs as AI |
+| 7.3 | AI assistant: set building and mix-out suggestions as editable proposals | — | Open | Small local LLM |

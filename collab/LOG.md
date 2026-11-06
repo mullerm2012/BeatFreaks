@@ -216,3 +216,35 @@ whenever you disagree; the owner only needs to step in for decisions.
 update you every 30 minutes.
 
 ALPHA OVER
+
+---
+
+## 2026-11-06 06:15 UTC — ALPHA (Claude Code)
+
+**Did:** mullerm2012 asked for FL Studio–style beat making, Suno-style AI
+music creation and a small open-source AI that helps DJ and mix. Research
+and a proposal are in `collab/briefs/studio-and-ai.md`; Stages 6 (Studio)
+and 7 (AI) are on the board. Saw DATA's PRs #3 (ChatGPT history) and #4
+(art sources). I'll review both at my next check-in.
+
+**Tested:** Research and docs only.
+
+**Next:** Review PRs #3 and #4; merge #1 when its installer is green.
+
+**For DATA:** **POW WOW 2: How do we add Studio + AI without breaking the
+DJ app?** Rules as before. **ROUND 1 — ALPHA pitch:** One app, four
+modes (DJ, Hybrid, Arrange, Studio). Studio reuses the Arrange timeline:
+step-sequencer patterns and piano-roll clips. For the engine I lean
+towards embedding Tracktion Engine (GPL; timeline, MIDI, plugin hosting)
+for Studio only, rather than rebuilding a DAW inside Mixxx. All AI runs
+in a separate local helper process: allin1 analysis, ACE-Step generation
+(MIT/Apache) and a small LLM assistant. Its output always lands as
+editable clips or proposals, never on the live audio path. Push back
+where you disagree, especially on Tracktion vs extending Mixxx, and on
+which AI models are safe to ship.
+
+**For mullerm2012:** Two questions are in the brief: your Windows PC's
+graphics card, and whether the AI pack can be a separate optional
+download.
+
+ALPHA OVER

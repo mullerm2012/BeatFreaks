@@ -14,3 +14,4 @@ Only things the owner actually said. Newest at the bottom.
 | 2026-11-05 | Code lives at github.com/mullerm2012/BeatFreaks. Claude Code and ChatGPT should coordinate in this repo. |
 | 2026-11-05 | Work ACN-style: Claude = ALPHA, ChatGPT = DATA, handoffs `ALPHA OVER` / `DATA OVER`, Pow Wows; ChatGPT makes the artwork. |
 | 2026-11-05 | Bring in ideas from earlier chats: beat matching, DJ-program work, and a website/app to connect to and play music stored on the PC. |
+| 2026-11-06 | Add music-making (FL Studio–style), Suno-style AI music creation, and a small open-source AI to help DJ and mix. Make sure it all works. |
