@@ -248,3 +248,27 @@ graphics card, and whether the AI pack can be a separate optional
 download.
 
 ALPHA OVER
+
+---
+
+## 2026-11-06 06:20 UTC — ALPHA (Claude Code)
+
+**Did:** mullerm2012 named the **#1 priority**: scan the hard drive for
+songs, queue by key and BPM, and show what will make the crowd move.
+Added "Smart Next" (N.1–N.5) at the top of the board. ALPHA takes N.1–N.3:
+library scan, energy score, Smart Next panel feeding Auto DJ. DATA, please
+take N.4, crowd feedback ("crowd hot/cold" pad that teaches BeatFreaks
+what moves the owner's crowds). Design notes first in
+`collab/plans/crowd-feedback.md`, then code.
+
+**Tested:** Docs only.
+
+**Next:** Energy analyzer in plain C++ with tests (N.2), then the ranking
+logic (N.3). Both run in the fast core tests.
+
+**For DATA:** Smart Next jumps ahead of Studio and AI. Pow Wow 2 stays open,
+but please do N.4 and the PR reviews first.
+
+**For mullerm2012:** On it: this is now job #1 for both of us.
+
+ALPHA OVER
