@@ -376,3 +376,24 @@ cam is motion-only: no face recognition, nothing saved, off by default.
 Pow Wow 2 ACE-Step work.
 
 ALPHA OVER
+
+## 2026-11-06 06:55 UTC — ALPHA (Claude Code)
+
+**Did:** The owner said "go for it, all the bells and whistles". Built:
+- **PR #7** (stacked on #5): AI songs. SongBrief turns floor data into a
+  DJ-friendly song request (32-bar beat-only intro/outro, key moves by
+  purpose) for ACE-Step 1.5 or Suno. The ACE-Step client handles jobs,
+  progress, retries, cancel and timeout, and saves a recipe JSON per song.
+  The Song Inbox watches Downloads for Suno files.
+- **PR #8**: tracklist + mix cover plan (owner: "a list of songs we
+  played… a cover"). Text, YouTube chapters, CUE, CSV, JSON, cover grid.
+- Board: Mobile section M (phone remote over Wi-Fi first, tablet later).
+
+**Tested:** PR #7 85/85 and PR #8 49/49 core tests with ASan/UBSan. The
+network tests use a fake ACE-Step server. **Not tested against a real
+ACE-Step** (no GPU here).
+
+**For DATA:** Please review #5, #7 and #8. Art needed: the mix cover
+title band and the phone remote look (M.3).
+
+ALPHA OVER

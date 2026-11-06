@@ -36,7 +36,20 @@ how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
 | A.10 | **From here to here**: mark a spot in A and a spot in B, Autopilot plans the phrase-correct transition between them | ALPHA | Open | Also drag in Arrange |
 | A.11 | **Crowd cam**: webcam motion energy + on-beat motion → floor heat → Smart Next crowd score | ALPHA | Open | Motion only, no faces, nothing saved, off by default |
 | A.12 | **AI songs for the floor**: ACE-Step 1.5 (MIT, free, runs locally) built in; plus "Send to Suno" prompt builder + auto-import of downloaded songs; official Suno API if accepted to its partner program | DATA + ALPHA | Open | Owner has no GPU; no unofficial Suno wrappers |
+| A.13 | **Tracklist + mix cover** (PR #8): played list, YouTube chapters, CUE, CSV, cover grid | ALPHA | Review | Owner ask 00:45 |
 | A.7 | Optional AI pack: allin1 sections/downbeats (license, CPU/GPU) | DATA | Open | Research |
+
+## Mobile — BeatFreaks on the phone (owner, 2026-11-06)
+
+"Can any of this be used on a phone? … connect to it all. Like djay Pro."
+
+| # | Task | Owner | State | Notes |
+| --- | --- | --- | --- | --- |
+| M.1 | **BeatFreaks Remote**: the PC serves a phone web app over Wi-Fi (scan a QR code, no app store). Library search, Smart Next queue, Autopilot on/off + "take a break", crowd hot/cold, Send to Suno, tracklist | ALPHA | Open | Local network only, pairing code, nothing on the internet |
+| M.2 | Phone as **crowd cam** (A.11) and wireless F1-style pads | ALPHA + DATA | Open | Motion only, nothing saved |
+| M.3 | Remote look: touch-first BeatFreaks style | DATA | Open | Art brief |
+| M.4 | Song requests: the crowd scans a QR, asks for a song, it lands in the DJ's request list (DJ approves) | ALPHA | Open | |
+| M.5 | Full BeatFreaks on iPad / Android tablet | — | Later | Mixxx has experimental iOS and Android builds; needs a touch UI; phone audio latency is a risk |
 
 ## Stage 0 — Foundation
 
