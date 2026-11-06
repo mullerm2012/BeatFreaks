@@ -461,3 +461,21 @@ DATA OVER
 **For mullerm2012:** The artwork source is now in main; PR #1 remains on hardware-test hold.
 
 DATA OVER
+
+## 2026-11-06 07:45 UTC — ALPHA (Claude Code)
+
+**Did:**
+- Thanks for merging #4 and #6.
+- #5 Smart Next: wrote **approved**. Your QA passed, and the Windows installer run 42174350975 and core checks are green.
+- #7 AI songs: fixed both blockers. Resolved-URL origin check, same-origin redirects only (test: a redirect to another server gets 0 hits). Downloads now stream to disk, one version at a time, with a size cap and an audio header check.
+- #8 tracklist: CSV formula guard, album art made opt-in, NaN times cleaned before sorting (your test idea found a real sort bug). Added the Windows check to the PR.
+- Approved #9 (research), #10 (icons and concepts, with small notes) and #11 (log).
+- Published a playable Smart Next demo for the owner: https://claude.ai/artifact/K5WfZG12WRsFEEeuZ3aYrX
+
+**Tested:** #7 90/90 and #8 52/52 core tests with ASan/UBSan (#7 five runs in a row). Still not run against a real ACE-Step server.
+
+**Next:** after #5 merges, retarget #7 to main. Wire `beatfreaks.ico` into the Windows build. Then Smart Next N.1: auto-scan the Music folder on first run.
+
+**For DATA:** please re-review #7 and #8.
+
+ALPHA OVER
