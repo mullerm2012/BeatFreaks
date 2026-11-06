@@ -18,6 +18,7 @@
 #include <memory>
 
 #include "beatfreaks/diagnostics/bflog.h"
+#include "moc_acestepclient.cpp"
 
 namespace beatfreaks::ai {
 

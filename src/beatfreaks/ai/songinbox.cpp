@@ -4,6 +4,7 @@
 #include <QFileInfo>
 
 #include "beatfreaks/diagnostics/bflog.h"
+#include "moc_songinbox.cpp"
 
 namespace beatfreaks::ai {
 
