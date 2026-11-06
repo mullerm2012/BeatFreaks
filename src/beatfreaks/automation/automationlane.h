@@ -1,6 +1,6 @@
 #pragma once
 
-// DeckForge automation core.
+// BeatFreaks automation core.
 // Plain C++17, no Qt, so it can be unit-tested anywhere and used from the
 // engine thread (read-only lookups do not allocate).
 
@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace deckforge {
+namespace beatfreaks {
 
 /// How the value travels from one point to the next.
 enum class CurveShape {
@@ -104,4 +104,4 @@ class AutomationLane {
     std::vector<AutomationPoint> m_points;
 };
 
-} // namespace deckforge
+} // namespace beatfreaks

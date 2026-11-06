@@ -1,4 +1,4 @@
-#include "deckforge/project/dfproject.h"
+#include "beatfreaks/project/bfproject.h"
 
 #include <QFile>
 #include <QJsonArray>
@@ -6,11 +6,11 @@
 #include <QSaveFile>
 #include <algorithm>
 
-namespace deckforge {
+namespace beatfreaks {
 
 namespace {
 
-const QString kFormatName = QStringLiteral("deckforge-project");
+const QString kFormatName = QStringLiteral("beatfreaks-project");
 
 QString shapeName(CurveShape shape) {
     return shape == CurveShape::Hold ? QStringLiteral("hold") : QStringLiteral("linear");
@@ -28,11 +28,11 @@ void setError(QString* error, const QString& message) {
 
 } // namespace
 
-QString DfProject::channelGroup(int channel) {
+QString BfProject::channelGroup(int channel) {
     return QStringLiteral("[Channel%1]").arg(channel + 1);
 }
 
-bool DfProject::moveClip(const QString& clipId, double deltaBeats) {
+bool BfProject::moveClip(const QString& clipId, double deltaBeats) {
     auto it = std::find_if(clips.begin(), clips.end(), [&](const Clip& c) {
         return c.id == clipId;
     });
@@ -52,7 +52,7 @@ bool DfProject::moveClip(const QString& clipId, double deltaBeats) {
     return true;
 }
 
-double DfProject::lengthBeats() const {
+double BfProject::lengthBeats() const {
     double end = 0.0;
     for (const auto& clip : clips) {
         end = std::max(end, clip.endBeat());
@@ -65,7 +65,7 @@ double DfProject::lengthBeats() const {
     return end;
 }
 
-QJsonObject DfProject::toJson() const {
+QJsonObject BfProject::toJson() const {
     QJsonArray clipArray;
     for (const auto& clip : clips) {
         clipArray.append(QJsonObject{
@@ -118,21 +118,21 @@ QJsonObject DfProject::toJson() const {
     };
 }
 
-std::optional<DfProject> DfProject::fromJson(const QJsonObject& json, QString* error) {
+std::optional<BfProject> BfProject::fromJson(const QJsonObject& json, QString* error) {
     if (json.value("format").toString() != kFormatName) {
-        setError(error, QStringLiteral("Not a DeckForge project file."));
+        setError(error, QStringLiteral("Not a BeatFreaks project file."));
         return std::nullopt;
     }
     const int version = json.value("version").toInt(0);
     if (version < 1 || version > kFormatVersion) {
         setError(error,
                 QStringLiteral("Project version %1 is not supported by this build "
-                               "(supports up to %2). Update DeckForge.")
+                               "(supports up to %2). Update BeatFreaks.")
                         .arg(version)
                         .arg(kFormatVersion));
         return std::nullopt;
     }
-    DfProject project;
+    BfProject project;
     project.title = json.value("title").toString(project.title);
     project.bpm = json.value("bpm").toDouble(project.bpm);
     if (project.bpm <= 0.0) {
@@ -187,7 +187,7 @@ std::optional<DfProject> DfProject::fromJson(const QJsonObject& json, QString* e
     return project;
 }
 
-bool DfProject::save(const QString& path, QString* error) const {
+bool BfProject::save(const QString& path, QString* error) const {
     QSaveFile file(path);
     if (!file.open(QIODevice::WriteOnly)) {
         setError(error, file.errorString());
@@ -201,7 +201,7 @@ bool DfProject::save(const QString& path, QString* error) const {
     return true;
 }
 
-std::optional<DfProject> DfProject::load(const QString& path, QString* error) {
+std::optional<BfProject> BfProject::load(const QString& path, QString* error) {
     QFile file(path);
     if (!file.open(QIODevice::ReadOnly)) {
         setError(error, file.errorString());
@@ -218,4 +218,4 @@ std::optional<DfProject> DfProject::load(const QString& path, QString* error) {
     return fromJson(doc.object(), error);
 }
 
-} // namespace deckforge
+} // namespace beatfreaks

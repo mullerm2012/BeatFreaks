@@ -8,7 +8,7 @@
 #include <string>
 #include <vector>
 
-namespace deckforge {
+namespace beatfreaks {
 
 enum class CheckState {
     Waiting, ///< not heard yet
@@ -26,7 +26,7 @@ struct HardwareControl {
 
 class HardwareTestModel {
   public:
-    /// The controls DeckForge expects from a Traktor Kontrol S4 MK3 and an F1.
+    /// The controls BeatFreaks expects from a Traktor Kontrol S4 MK3 and an F1.
     static HardwareTestModel forS4Mk3AndF1();
 
     void add(const std::string& device, const std::string& id, const std::string& label);
@@ -59,4 +59,4 @@ class HardwareTestModel {
     std::map<std::string, std::size_t> m_index;
 };
 
-} // namespace deckforge
+} // namespace beatfreaks

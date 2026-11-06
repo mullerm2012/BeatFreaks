@@ -1,10 +1,10 @@
-#include "deckforge/automation/automationlane.h"
+#include "beatfreaks/automation/automationlane.h"
 
 #include <algorithm>
 #include <cmath>
 #include <utility>
 
-namespace deckforge {
+namespace beatfreaks {
 
 AutomationLane::AutomationLane(std::string controlKey, bool isToggle)
         : m_controlKey(std::move(controlKey)),
@@ -249,4 +249,4 @@ bool AutomationLane::operator==(const AutomationLane& other) const {
     return true;
 }
 
-} // namespace deckforge
+} // namespace beatfreaks

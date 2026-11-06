@@ -1,21 +1,21 @@
-# Fast check for DeckForge's own code (automation, project file, diagnostics).
+# Fast check for BeatFreaks's own code (automation, project file, diagnostics).
 # Runs in about a minute on every push, before the full Mixxx build finishes.
 # The Windows installer itself comes from the existing "Pull request or branch
 # build" workflow (develop.yml -> build.yml, artifact "windows-win64").
-name: DeckForge core tests
+name: BeatFreaks core tests
 
 on:
   push:
     paths:
-      - "src/deckforge/**"
-      - "src/test/deckforge/**"
-      - "tools/deckforge_core/**"
-      - ".github/workflows/deckforge-core.yml"
+      - "src/beatfreaks/**"
+      - "src/test/beatfreaks/**"
+      - "tools/beatfreaks_core/**"
+      - ".github/workflows/beatfreaks-core.yml"
   pull_request:
     paths:
-      - "src/deckforge/**"
-      - "src/test/deckforge/**"
-      - "tools/deckforge_core/**"
+      - "src/beatfreaks/**"
+      - "src/test/beatfreaks/**"
+      - "tools/beatfreaks_core/**"
   workflow_dispatch:
 
 permissions:
@@ -36,7 +36,7 @@ jobs:
 
       - name: Configure
         run: >
-          cmake -S tools/deckforge_core -B build-core -G Ninja
+          cmake -S tools/beatfreaks_core -B build-core -G Ninja
           -DCMAKE_BUILD_TYPE=Debug
           "-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer"
 

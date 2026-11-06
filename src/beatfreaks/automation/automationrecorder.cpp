@@ -1,10 +1,10 @@
-#include "deckforge/automation/automationrecorder.h"
+#include "beatfreaks/automation/automationrecorder.h"
 
 #include <algorithm>
 #include <cmath>
 #include <vector>
 
-namespace deckforge {
+namespace beatfreaks {
 
 namespace {
 constexpr double kEps = AutomationLane::kBeatEpsilon;
@@ -338,4 +338,4 @@ std::size_t AutomationPlayer::process(double beat, const WriteFn& write) {
     return sent;
 }
 
-} // namespace deckforge
+} // namespace beatfreaks

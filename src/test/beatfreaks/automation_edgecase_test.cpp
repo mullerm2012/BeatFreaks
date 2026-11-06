@@ -3,9 +3,9 @@
 #include <gtest/gtest.h>
 #include <QJsonArray>
 #include <QString>
-#include "deckforge/automation/automationrecorder.h"
-#include "deckforge/project/dfproject.h"
-using namespace deckforge;
+#include "beatfreaks/automation/automationrecorder.h"
+#include "beatfreaks/project/bfproject.h"
+using namespace beatfreaks;
 namespace {
 const std::string kVol = "[Channel1],volume";
 const std::string kPlay = "[Channel1],play";
@@ -105,7 +105,7 @@ TEST(AutomationEdgeCaseTest, ThinningTouchesUntouchedRegion) {
 
 // 9. moveClip clamped at 0: clip moves less than its automation.
 TEST(AutomationEdgeCaseTest, MoveClipClampDesyncsAutomation) {
-    DfProject p; Clip c; c.id = QStringLiteral("c"); c.channel = 0; c.startBeat = 2; c.lengthBeats = 8;
+    BfProject p; Clip c; c.id = QStringLiteral("c"); c.channel = 0; c.startBeat = 2; c.lengthBeats = 8;
     p.clips.append(c);
     AutomationLane l(kVol); l.insert(2, 0.1); l.insert(6, 0.6); l.insert(10, 1.0);
     p.lanes.emplace(kVol, l);
@@ -119,11 +119,11 @@ TEST(AutomationEdgeCaseTest, MoveClipClampDesyncsAutomation) {
 
 // 11. JSON load: unsorted + duplicate points.
 TEST(AutomationEdgeCaseTest, JsonUnsortedDuplicates) {
-    QJsonObject o{{"format", "deckforge-project"}, {"version", 1},
+    QJsonObject o{{"format", "beatfreaks-project"}, {"version", 1},
         {"lanes", QJsonArray{QJsonObject{{"control", "[Channel1],volume"},
             {"points", QJsonArray{QJsonArray{8, 0.8}, QJsonArray{0, 0.0}, QJsonArray{8, 0.3},
                                   QJsonArray{4, 0.5}}}}}}};
-    auto p = DfProject::fromJson(o);
+    auto p = BfProject::fromJson(o);
     ASSERT_TRUE(p);
     const auto& l = p->lanes.at(kVol);
     ASSERT_EQ(3u, l.size());

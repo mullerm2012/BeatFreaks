@@ -7,7 +7,7 @@
 #include <QString>
 #include <QStringList>
 
-namespace deckforge {
+namespace beatfreaks {
 
 class DiagnosticReport {
   public:
@@ -27,7 +27,7 @@ class DiagnosticReport {
     /// to "~" so no personal folder names are shared.
     static QString buildText(const Input& input, const QDateTime& now);
 
-    /// Writes DeckForge-report-<date>-<time>.txt into outDir and returns its
+    /// Writes BeatFreaks-report-<date>-<time>.txt into outDir and returns its
     /// path, or an empty string and an error.
     static QString write(const Input& input,
             const QString& outDir,
@@ -38,4 +38,4 @@ class DiagnosticReport {
     static QString tail(const QString& path, int maxLines);
 };
 
-} // namespace deckforge
+} // namespace beatfreaks

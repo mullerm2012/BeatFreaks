@@ -6,16 +6,16 @@
 #include <QJsonDocument>
 #include <QTemporaryDir>
 
-#include "deckforge/diagnostics/diagnosticreport.h"
-#include "deckforge/diagnostics/hardwaretest.h"
-#include "deckforge/project/dfproject.h"
+#include "beatfreaks/diagnostics/diagnosticreport.h"
+#include "beatfreaks/diagnostics/hardwaretest.h"
+#include "beatfreaks/project/bfproject.h"
 
-using namespace deckforge;
+using namespace beatfreaks;
 
 namespace {
 
-DfProject sampleProject() {
-    DfProject p;
+BfProject sampleProject() {
+    BfProject p;
     p.title = QStringLiteral("Friday Set – take 3");
     p.bpm = 124.0;
     p.clips.append(Clip{QStringLiteral("clip-1"),
@@ -58,10 +58,10 @@ DfProject sampleProject() {
 
 } // namespace
 
-TEST(DfProjectTest, JsonRoundTripKeepsEverything) {
-    const DfProject original = sampleProject();
+TEST(BfProjectTest, JsonRoundTripKeepsEverything) {
+    const BfProject original = sampleProject();
     QString error;
-    const auto loaded = DfProject::fromJson(original.toJson(), &error);
+    const auto loaded = BfProject::fromJson(original.toJson(), &error);
     ASSERT_TRUE(loaded.has_value()) << error.toStdString();
     EXPECT_EQ(original.title, loaded->title);
     EXPECT_DOUBLE_EQ(original.bpm, loaded->bpm);
@@ -75,37 +75,37 @@ TEST(DfProjectTest, JsonRoundTripKeepsEverything) {
     EXPECT_EQ(CurveShape::Hold, loaded->lanes.at("[Channel3],play").points()[0].shape);
 }
 
-TEST(DfProjectTest, SaveAndLoadFromDisk) {
+TEST(BfProjectTest, SaveAndLoadFromDisk) {
     QTemporaryDir dir;
     ASSERT_TRUE(dir.isValid());
-    const QString path = dir.filePath(QStringLiteral("set.dfproj"));
+    const QString path = dir.filePath(QStringLiteral("set.bfproj"));
     QString error;
     ASSERT_TRUE(sampleProject().save(path, &error)) << error.toStdString();
-    const auto loaded = DfProject::load(path, &error);
+    const auto loaded = BfProject::load(path, &error);
     ASSERT_TRUE(loaded.has_value()) << error.toStdString();
     EXPECT_EQ(2, loaded->clips.size());
 }
 
-TEST(DfProjectTest, RejectsDamagedOrForeignFiles) {
+TEST(BfProjectTest, RejectsDamagedOrForeignFiles) {
     QTemporaryDir dir;
-    const QString damaged = dir.filePath(QStringLiteral("bad.dfproj"));
+    const QString damaged = dir.filePath(QStringLiteral("bad.bfproj"));
     {
         QFile f(damaged);
         ASSERT_TRUE(f.open(QIODevice::WriteOnly));
-        f.write("{ \"format\": \"deckforge-project\", ");
+        f.write("{ \"format\": \"beatfreaks-project\", ");
     }
     QString error;
-    EXPECT_FALSE(DfProject::load(damaged, &error).has_value());
+    EXPECT_FALSE(BfProject::load(damaged, &error).has_value());
     EXPECT_TRUE(error.contains(QStringLiteral("damaged")));
 
-    EXPECT_FALSE(DfProject::fromJson(QJsonObject{{"format", "something-else"}}, &error));
-    EXPECT_FALSE(DfProject::fromJson(
-            QJsonObject{{"format", "deckforge-project"}, {"version", 99}}, &error));
+    EXPECT_FALSE(BfProject::fromJson(QJsonObject{{"format", "something-else"}}, &error));
+    EXPECT_FALSE(BfProject::fromJson(
+            QJsonObject{{"format", "beatfreaks-project"}, {"version", 99}}, &error));
     EXPECT_TRUE(error.contains(QStringLiteral("99")));
 }
 
-TEST(DfProjectTest, MovingAClipCarriesItsAutomation) {
-    DfProject p = sampleProject();
+TEST(BfProjectTest, MovingAClipCarriesItsAutomation) {
+    BfProject p = sampleProject();
     ASSERT_TRUE(p.moveClip(QStringLiteral("clip-2"), 16.0)); // channel 3 clip, 80..160
     EXPECT_DOUBLE_EQ(96.0, p.clips[1].startBeat);
     const AutomationLane& filter = p.lanes.at("[Channel3],filter");
@@ -116,8 +116,8 @@ TEST(DfProjectTest, MovingAClipCarriesItsAutomation) {
     EXPECT_FALSE(p.moveClip(QStringLiteral("nope"), 4.0));
 }
 
-TEST(DfProjectTest, LengthCoversClipsAndLanes) {
-    DfProject p = sampleProject();
+TEST(BfProjectTest, LengthCoversClipsAndLanes) {
+    BfProject p = sampleProject();
     EXPECT_DOUBLE_EQ(168.0, p.lengthBeats());
     p.lanes.at("[Channel1],volume").insert(200.0, 0.0);
     EXPECT_DOUBLE_EQ(200.0, p.lengthBeats());
@@ -158,7 +158,7 @@ TEST(DiagnosticReportTest, BundlesLogsAndHidesHomeFolder) {
     DiagnosticReport::Input in;
     in.appVersion = QStringLiteral("0.1.0-test");
     in.settingsDir = dir.path();
-    in.controllers = {QStringLiteral("Traktor Kontrol S4 MK3 (HID) - DeckForge mapping")};
+    in.controllers = {QStringLiteral("Traktor Kontrol S4 MK3 (HID) - BeatFreaks mapping")};
     in.hardwareTestReport = QStringLiteral("Hardware Test: 90 of 93 controls passed");
     in.logTailLines = 10;
     in.homePath = QStringLiteral("/home/dj");
@@ -175,6 +175,6 @@ TEST(DiagnosticReportTest, BundlesLogsAndHidesHomeFolder) {
     QString error;
     const QString path = DiagnosticReport::write(in, dir.filePath(QStringLiteral("out")), now, &error);
     ASSERT_FALSE(path.isEmpty()) << error.toStdString();
-    EXPECT_TRUE(path.endsWith(QStringLiteral("DeckForge-report-20261106-224107.txt")));
+    EXPECT_TRUE(path.endsWith(QStringLiteral("BeatFreaks-report-20261106-224107.txt")));
     EXPECT_TRUE(QFile::exists(path));
 }

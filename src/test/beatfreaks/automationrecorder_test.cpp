@@ -2,9 +2,9 @@
 
 #include <vector>
 
-#include "deckforge/automation/automationrecorder.h"
+#include "beatfreaks/automation/automationrecorder.h"
 
-using namespace deckforge;
+using namespace beatfreaks;
 
 namespace {
 

@@ -1,4 +1,4 @@
-#include "deckforge/diagnostics/diagnosticreport.h"
+#include "beatfreaks/diagnostics/diagnosticreport.h"
 
 #include <QDir>
 #include <QFile>
@@ -6,7 +6,7 @@
 #include <QSysInfo>
 #include <QTextStream>
 
-namespace deckforge {
+namespace beatfreaks {
 
 namespace {
 
@@ -45,7 +45,7 @@ QString DiagnosticReport::tail(const QString& path, int maxLines) {
 
 QString DiagnosticReport::buildText(const Input& input, const QDateTime& now) {
     QString out;
-    out += QStringLiteral("DeckForge diagnostic report\n");
+    out += QStringLiteral("BeatFreaks diagnostic report\n");
     out += QStringLiteral("Created: %1\n").arg(now.toString(Qt::ISODate));
     out += QStringLiteral("Version: %1\n").arg(input.appVersion);
     out += QStringLiteral("System: %1 (%2), CPU %3\n")
@@ -92,7 +92,7 @@ QString DiagnosticReport::write(
         }
         return {};
     }
-    const QString path = dir.filePath(QStringLiteral("DeckForge-report-%1.txt")
+    const QString path = dir.filePath(QStringLiteral("BeatFreaks-report-%1.txt")
                     .arg(now.toString(QStringLiteral("yyyyMMdd-HHmmss"))));
     QSaveFile file(path);
     if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
@@ -111,4 +111,4 @@ QString DiagnosticReport::write(
     return path;
 }
 
-} // namespace deckforge
+} // namespace beatfreaks

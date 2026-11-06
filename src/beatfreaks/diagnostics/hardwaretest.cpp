@@ -1,8 +1,8 @@
-#include "deckforge/diagnostics/hardwaretest.h"
+#include "beatfreaks/diagnostics/hardwaretest.h"
 
 #include <sstream>
 
-namespace deckforge {
+namespace beatfreaks {
 
 HardwareTestModel HardwareTestModel::forS4Mk3AndF1() {
     HardwareTestModel m;
@@ -187,4 +187,4 @@ std::string HardwareTestModel::report() const {
     return out.str();
 }
 
-} // namespace deckforge
+} // namespace beatfreaks

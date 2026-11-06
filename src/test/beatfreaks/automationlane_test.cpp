@@ -1,8 +1,8 @@
 #include <gtest/gtest.h>
 
-#include "deckforge/automation/automationlane.h"
+#include "beatfreaks/automation/automationlane.h"
 
-using namespace deckforge;
+using namespace beatfreaks;
 
 TEST(AutomationLaneTest, EmptyLaneReturnsFallback) {
     AutomationLane lane("[Channel1],volume");

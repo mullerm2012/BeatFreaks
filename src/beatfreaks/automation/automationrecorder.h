@@ -1,6 +1,6 @@
 #pragma once
 
-// DeckForge automation recorder and player.
+// BeatFreaks automation recorder and player.
 // Plain C++17, no Qt. The Mixxx glue feeds control changes in and writes
 // played-back values out.
 //
@@ -14,9 +14,9 @@
 #include <string>
 #include <utility>
 
-#include "deckforge/automation/automationlane.h"
+#include "beatfreaks/automation/automationlane.h"
 
-namespace deckforge {
+namespace beatfreaks {
 
 /// All lanes of a project, by control key ("[Channel1],volume").
 using LaneMap = std::map<std::string, AutomationLane>;
@@ -161,4 +161,4 @@ class AutomationPlayer {
     std::map<std::string, double> m_lastSent;
 };
 
-} // namespace deckforge
+} // namespace beatfreaks

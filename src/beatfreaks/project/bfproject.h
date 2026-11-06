@@ -1,6 +1,6 @@
 #pragma once
 
-// DeckForge project file (.dfproj): clips on channels, markers and automation
+// BeatFreaks project file (.bfproj): clips on channels, markers and automation
 // lanes, saved as readable JSON. Uses only QtCore.
 
 #include <QJsonObject>
@@ -8,9 +8,9 @@
 #include <QString>
 #include <optional>
 
-#include "deckforge/automation/automationrecorder.h"
+#include "beatfreaks/automation/automationrecorder.h"
 
-namespace deckforge {
+namespace beatfreaks {
 
 /// One piece of audio on a channel of the timeline.
 struct Clip {
@@ -39,7 +39,7 @@ struct Marker {
     bool operator==(const Marker& other) const = default;
 };
 
-class DfProject {
+class BfProject {
   public:
     static constexpr int kFormatVersion = 1;
     static constexpr int kChannelCount = 4;
@@ -62,14 +62,14 @@ class DfProject {
     double lengthBeats() const;
 
     QJsonObject toJson() const;
-    /// Returns std::nullopt and fills error if the JSON is not a DeckForge
+    /// Returns std::nullopt and fills error if the JSON is not a BeatFreaks
     /// project or is from a newer version.
-    static std::optional<DfProject> fromJson(const QJsonObject& json, QString* error = nullptr);
+    static std::optional<BfProject> fromJson(const QJsonObject& json, QString* error = nullptr);
 
     /// Atomic save: writes to a temp file and swaps it in, so a crash
     /// mid-save never corrupts the project.
     bool save(const QString& path, QString* error = nullptr) const;
-    static std::optional<DfProject> load(const QString& path, QString* error = nullptr);
+    static std::optional<BfProject> load(const QString& path, QString* error = nullptr);
 };
 
-} // namespace deckforge
+} // namespace beatfreaks
