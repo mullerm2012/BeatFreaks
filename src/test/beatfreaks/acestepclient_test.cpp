@@ -33,7 +33,12 @@ struct Response {
     int status = 200;
     QByteArray body;
     QByteArray contentType = "application/json";
+    QByteArray extraHeaders; ///< e.g. "Location: …\r\n"
 };
+
+QByteArray flac(int bytes) {
+    return QByteArray("fLaC") + QByteArray(bytes - 4, 'a');
+}
 
 /// A tiny HTTP/1.1 server standing in for ACE-Step. Each route is a function
 /// of the request body so a test can change answers between calls.
@@ -98,7 +103,7 @@ class FakeAceStep : public QObject {
         const Response r = it != m_routes.cend() ? (*it)(body) : Response{404, "{\"detail\":\"no\"}"};
         QByteArray out = "HTTP/1.1 " + QByteArray::number(r.status) + " X\r\nContent-Type: " +
                 r.contentType + "\r\nContent-Length: " + QByteArray::number(r.body.size()) +
-                "\r\nConnection: close\r\n\r\n" + r.body;
+                "\r\n" + r.extraHeaders + "Connection: close\r\n\r\n" + r.body;
         s->write(out);
         s->flush();
         s->disconnectFromHost();
@@ -254,12 +259,33 @@ TEST(AceStepParse, QueryWithResultAsStringOrArray) {
 
 TEST(AceStepParse, AudioUrlOnlyFromTheServer) {
     const QUrl base(QStringLiteral("http://127.0.0.1:8001"));
+    // DATA's review: check the *resolved* URL, not the raw string
+    EXPECT_FALSE(AceStepClient::audioUrl(base, QStringLiteral("//evil.invalid/audio")).isValid());
+    EXPECT_FALSE(AceStepClient::audioUrl(base, QStringLiteral("https://127.0.0.1:8001/v1/audio")).isValid());
+    EXPECT_FALSE(AceStepClient::audioUrl(base, QStringLiteral("http://127.0.0.1:9999/v1/audio")).isValid());
+    EXPECT_FALSE(AceStepClient::audioUrl(base, QStringLiteral("http://me:pw@127.0.0.1:8001/v1/audio")).isValid());
+    EXPECT_FALSE(AceStepClient::audioUrl(base, QStringLiteral("file:///etc/passwd")).isValid());
+    EXPECT_FALSE(AceStepClient::audioUrl(QUrl(QStringLiteral("ftp://127.0.0.1")), QStringLiteral("/x")).isValid());
+    EXPECT_TRUE(AceStepClient::audioUrl(QUrl(QStringLiteral("http://Localhost:80")),
+            QStringLiteral("http://localhost/v1/audio?path=a")).isValid()); // default port, host case
     EXPECT_EQ(AceStepClient::audioUrl(base, QStringLiteral("/v1/audio?path=%2Ftmp%2Fa.flac")).toString(),
             QStringLiteral("http://127.0.0.1:8001/v1/audio?path=%2Ftmp%2Fa.flac"));
     EXPECT_TRUE(AceStepClient::audioUrl(base, QStringLiteral("http://127.0.0.1:8001/v1/audio?path=a"))
                     .isValid());
     EXPECT_FALSE(AceStepClient::audioUrl(base, QStringLiteral("http://evil.example/a.flac")).isValid());
     EXPECT_FALSE(AceStepClient::audioUrl(base, QString()).isValid());
+}
+
+TEST(AceStepParse, LooksLikeAudio) {
+    EXPECT_TRUE(AceStepClient::looksLikeAudio("fLaC\0\0\0\x22"));
+    EXPECT_TRUE(AceStepClient::looksLikeAudio("ID3\x04\0\0"));
+    EXPECT_TRUE(AceStepClient::looksLikeAudio(QByteArray("\xFF\xFB\x90\x00", 4)));
+    EXPECT_TRUE(AceStepClient::looksLikeAudio("RIFF\0\0\0\0WAVE"));
+    EXPECT_TRUE(AceStepClient::looksLikeAudio("OggS\0\x02"));
+    EXPECT_TRUE(AceStepClient::looksLikeAudio(QByteArray("\0\0\0 ftypM4A ", 12)));
+    EXPECT_FALSE(AceStepClient::looksLikeAudio("<html><body>"));
+    EXPECT_FALSE(AceStepClient::looksLikeAudio("{\"detail\":1}"));
+    EXPECT_FALSE(AceStepClient::looksLikeAudio("fL"));
 }
 
 TEST(AceStepParse, SafeFileName) {
@@ -280,7 +306,7 @@ TEST_F(AceStepClientTest, MakesSongsAndSavesRecipes) {
         return Response{200, queryAnswer("t1", ++polls < 3 ? 0 : 1, 2)};
     });
     server.on("GET", "/v1/audio", [](const QByteArray&) {
-        return Response{200, QByteArray(4096, 'a'), "audio/flac"};
+        return Response{200, flac(4096), "audio/flac"};
     });
     AceStepSettings s = fastSettings(server.url(), m_dir.path());
     s.apiKey = QStringLiteral("secret");
@@ -452,4 +478,97 @@ TEST_F(AceStepClientTest, HealthCheckOk) {
     ASSERT_TRUE(waitFor([&] { return done; }));
     EXPECT_TRUE(healthy);
     EXPECT_EQ(detail, QStringLiteral("ACE-Step API 1.0"));
+}
+
+// --------------------------------------------- download safety (DATA) ---
+
+namespace {
+
+/// Serves release + a finished task whose files are /v1/audio?path=song0..N.
+void serveFinishedTask(FakeAceStep& server, int items) {
+    server.on("POST", "/release_task", [](const QByteArray&) { return Response{200, released("t7")}; });
+    server.on("POST", "/query_result", [items](const QByteArray&) {
+        return Response{200, queryAnswer("t7", 1, items)};
+    });
+}
+
+} // namespace
+
+TEST_F(AceStepClientTest, RefusesRedirectToAnotherServer) {
+    FakeAceStep evil;
+    evil.on("GET", "/steal", [](const QByteArray&) { return Response{200, flac(4096), "audio/flac"}; });
+    FakeAceStep server;
+    serveFinishedTask(server, 1);
+    const QByteArray location = "Location: " + evil.url().toString().toUtf8() + "/steal\r\n";
+    server.on("GET", "/v1/audio", [location](const QByteArray&) {
+        return Response{302, "", "text/plain", location};
+    });
+    AceStepSettings s = fastSettings(server.url(), m_dir.path());
+    s.apiKey = QStringLiteral("secret");
+    AceStepClient client(s);
+    Outcome o;
+    watch(client, o);
+    client.generate(brief());
+    ASSERT_TRUE(waitFor([&] { return o.failed || o.finished; }));
+    EXPECT_TRUE(o.failed);
+    EXPECT_EQ(evil.hits("/steal"), 0); // the key never left
+    EXPECT_TRUE(QDir(m_dir.path()).entryList(QDir::Files).isEmpty());
+}
+
+TEST_F(AceStepClientTest, RejectsNonAudioAndErrors) {
+    FakeAceStep server;
+    serveFinishedTask(server, 3);
+    int n = 0;
+    server.on("GET", "/v1/audio", [&n](const QByteArray&) {
+        switch (n++) {
+        case 0:
+            return Response{200, "<html>login page</html>" + QByteArray(2000, ' '), "text/html"};
+        case 1:
+            return Response{404, "{\"detail\":\"gone\"}"};
+        default:
+            return Response{200, flac(3000), "audio/flac"};
+        }
+    });
+    AceStepClient client(fastSettings(server.url(), m_dir.path()));
+    Outcome o;
+    watch(client, o);
+    client.generate(brief());
+    ASSERT_TRUE(waitFor([&] { return o.failed || o.finished; }));
+    ASSERT_TRUE(o.finished) << o.reason.toStdString();
+    ASSERT_EQ(o.songs.size(), 1); // only the real audio file is kept
+    EXPECT_EQ(o.songs[0].variation, 3);
+    // no leftovers from the two bad versions: one song + its recipe
+    EXPECT_EQ(QDir(m_dir.path()).entryList(QDir::Files).size(), 2);
+}
+
+TEST_F(AceStepClientTest, CapsDownloadSize) {
+    FakeAceStep server;
+    serveFinishedTask(server, 1);
+    server.on("GET", "/v1/audio", [](const QByteArray&) { return Response{200, flac(200000), "audio/flac"}; });
+    AceStepSettings s = fastSettings(server.url(), m_dir.path());
+    s.maxDownloadBytes = 50000;
+    AceStepClient client(s);
+    Outcome o;
+    watch(client, o);
+    client.generate(brief());
+    ASSERT_TRUE(waitFor([&] { return o.failed || o.finished; }));
+    EXPECT_TRUE(o.failed);
+    EXPECT_TRUE(QDir(m_dir.path()).entryList(QDir::Files).isEmpty());
+}
+
+TEST_F(AceStepClientTest, DownloadsOneVersionAtATime) {
+    FakeAceStep server;
+    serveFinishedTask(server, 4);
+    server.on("GET", "/v1/audio", [](const QByteArray&) { return Response{200, flac(1000), "audio/flac"}; });
+    AceStepClient client(fastSettings(server.url(), m_dir.path()));
+    Outcome o;
+    watch(client, o);
+    client.generate(brief());
+    ASSERT_TRUE(waitFor([&] { return o.failed || o.finished; }));
+    ASSERT_TRUE(o.finished);
+    ASSERT_EQ(o.songs.size(), 4);
+    for (int i = 0; i < 4; ++i) {
+        EXPECT_EQ(o.songs[i].variation, i + 1);
+    }
+    EXPECT_EQ(server.hits("/v1/audio"), 4);
 }

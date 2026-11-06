@@ -25,6 +25,7 @@
 
 class QNetworkAccessManager;
 class QNetworkReply;
+class QNetworkRequest;
 
 namespace beatfreaks::ai {
 
@@ -37,6 +38,7 @@ struct AceStepSettings {
     int jobTimeoutMs = 30 * 60 * 1000;   ///< whole job; CPU-only can take long
     int maxRetries = 5;                  ///< per request, for busy/offline server
     int maxBackoffMs = 30000;
+    qint64 maxDownloadBytes = 400LL * 1024 * 1024; ///< per song; a 10-min FLAC is ~100 MB
 };
 
 /// One finished version of a song.
@@ -105,7 +107,12 @@ class AceStepClient : public QObject {
     // Parsing helpers (public for tests).
     static AceStepRelease parseRelease(const QByteArray& body);
     static QList<AceStepTask> parseQuery(const QByteArray& body);
+    /// The download URL for a result file, or an invalid URL unless it is on
+    /// exactly the configured server (same http(s) scheme, host and port, no
+    /// user info). Protects the API key from being sent anywhere else.
     static QUrl audioUrl(const QUrl& base, const QString& file);
+    /// True if the first bytes look like FLAC, MP3, WAV, AIFF, Ogg/Opus or M4A.
+    static bool looksLikeAudio(const QByteArray& head);
     /// File name safe on Windows: no \ / : * ? " < > |, trimmed, ≤ 120 chars.
     static QString safeFileName(const QString& name);
 
@@ -124,22 +131,24 @@ class AceStepClient : public QObject {
         QString taskId;
         qint64 startedMs = 0;
         int retries = 0;
-        int pendingDownloads = 0;
+        QList<AceStepItem> toDownload;  ///< downloaded one at a time
+        int nextVariation = 1;
         QList<GeneratedSong> songs;
         QList<QPointer<QNetworkReply>> replies;
     };
 
     void submit(const QString& jobId);
     void poll(const QString& jobId);
-    void download(const QString& jobId, const AceStepItem& item, int variation);
+    void downloadNext(const QString& jobId);
     void retryOrFail(const QString& jobId, void (AceStepClient::*step)(const QString&),
             const QString& reason);
     void fail(const QString& jobId, const QString& reason);
-    void finishIfDone(const QString& jobId);
+    void finish(const QString& jobId);
     QNetworkReply* post(const QString& jobId, const QString& path, const QJsonObject& body);
     QNetworkReply* get(const QString& jobId, const QUrl& url);
     void trackReply(const QString& jobId, QNetworkReply* reply);
     QString uniquePath(const QString& baseName, const QString& suffix) const;
+    QNetworkRequest request(const QUrl& url) const;
     qint64 nowMs() const;
 
     AceStepSettings m_settings;
