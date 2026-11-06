@@ -21,6 +21,7 @@ add_library(beatfreaks_core STATIC
   ${MIXXX_SRC}/beatfreaks/diagnostics/bflog.cpp
   ${MIXXX_SRC}/beatfreaks/diagnostics/diagnosticreport.cpp
   ${MIXXX_SRC}/beatfreaks/project/bfproject.cpp
+  ${MIXXX_SRC}/beatfreaks/library/tracklist.cpp
 )
 target_include_directories(beatfreaks_core PUBLIC ${MIXXX_SRC})
 target_link_libraries(beatfreaks_core PUBLIC Qt6::Core)
@@ -35,6 +36,7 @@ add_executable(beatfreaks_core_tests
   ${MIXXX_SRC}/test/beatfreaks/automationrecorder_test.cpp
   ${MIXXX_SRC}/test/beatfreaks/bfproject_test.cpp
   ${MIXXX_SRC}/test/beatfreaks/automation_edgecase_test.cpp
+  ${MIXXX_SRC}/test/beatfreaks/tracklist_test.cpp
 )
 target_link_libraries(beatfreaks_core_tests PRIVATE beatfreaks_core GTest::gtest GTest::gtest_main)
 
