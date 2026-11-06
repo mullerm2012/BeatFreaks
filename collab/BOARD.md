@@ -13,8 +13,8 @@ see what will make the crowd move. That's the number one thing."
 | # | Task | Owner | State | Notes |
 | --- | --- | --- | --- | --- |
 | N.1 | Library scan of the owner's music folders (incl. `C:\Users\PukDr\Music`), BPM + key analysis for every track | ALPHA | Open | Mixxx already scans + detects BPM/key; make it automatic on first run and show progress |
-| N.2 | **Energy score** per track (0–10) from the audio: loudness, low-end punch, beat density, plus intro/outro sections | ALPHA | Open | Own C++ analyzer, unit-tested; 7.1 (allin1) improves it later |
-| N.3 | **Smart Next panel**: while a track plays, rank the library by key match (Camelot), BPM range, energy direction (build / hold / cool down) and genre; one press queues it | ALPHA | Open | Feeds Mixxx's Auto DJ queue |
+| N.2 | **Energy score** per track (0–10) from the audio: loudness, low-end punch, beat density, plus intro/outro sections | ALPHA | In review | Own C++ analyzer, unit-tested; 7.1 (allin1) improves it later |
+| N.3 | **Smart Next panel**: while a track plays, rank the library by key match (Camelot), BPM range, energy direction (build / hold / cool down) and genre; one press queues it | ALPHA | In progress | Ranking engine in PR `code/smart-next`; panel UI next | Feeds Mixxx's Auto DJ queue |
 | N.4 | **Crowd feedback**: one F1 pad/Stream Deck key "crowd hot" / "crowd cold" while a track plays; BeatFreaks learns what moves the owner's crowds | DATA | Open | Stored per track + venue/crowd type |
 | N.5 | Set builder: "1 hour, rising from 100 to 128 BPM, end on crowd movers" → a queue you can edit | — | Open | Uses N.2–N.4; later the AI assistant (7.3) |
 

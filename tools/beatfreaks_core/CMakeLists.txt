@@ -11,7 +11,7 @@ set(CMAKE_AUTOMOC OFF)
 
 get_filename_component(MIXXX_SRC "${CMAKE_CURRENT_LIST_DIR}/../../src" ABSOLUTE)
 
-find_package(Qt6 REQUIRED COMPONENTS Core)
+find_package(Qt6 REQUIRED COMPONENTS Core Sql)
 find_package(GTest REQUIRED)
 
 add_library(beatfreaks_core STATIC
@@ -21,9 +21,11 @@ add_library(beatfreaks_core STATIC
   ${MIXXX_SRC}/beatfreaks/diagnostics/bflog.cpp
   ${MIXXX_SRC}/beatfreaks/diagnostics/diagnosticreport.cpp
   ${MIXXX_SRC}/beatfreaks/project/bfproject.cpp
+  ${MIXXX_SRC}/beatfreaks/library/smartnext.cpp
+  ${MIXXX_SRC}/beatfreaks/library/energystore.cpp
 )
 target_include_directories(beatfreaks_core PUBLIC ${MIXXX_SRC})
-target_link_libraries(beatfreaks_core PUBLIC Qt6::Core)
+target_link_libraries(beatfreaks_core PUBLIC Qt6::Core Qt6::Sql)
 if(MSVC)
   target_compile_options(beatfreaks_core PRIVATE /W4 /WX)
 else()
@@ -35,6 +37,8 @@ add_executable(beatfreaks_core_tests
   ${MIXXX_SRC}/test/beatfreaks/automationrecorder_test.cpp
   ${MIXXX_SRC}/test/beatfreaks/bfproject_test.cpp
   ${MIXXX_SRC}/test/beatfreaks/automation_edgecase_test.cpp
+  ${MIXXX_SRC}/test/beatfreaks/smartnext_test.cpp
+  ${MIXXX_SRC}/test/beatfreaks/energystore_test.cpp
 )
 target_link_libraries(beatfreaks_core_tests PRIVATE beatfreaks_core GTest::gtest GTest::gtest_main)
 
