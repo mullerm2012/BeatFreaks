@@ -1,0 +1,47 @@
+# Fast check for DeckForge's own code (automation, project file, diagnostics).
+# Runs in about a minute on every push, before the full Mixxx build finishes.
+# The Windows installer itself comes from the existing "Pull request or branch
+# build" workflow (develop.yml -> build.yml, artifact "windows-win64").
+name: DeckForge core tests
+
+on:
+  push:
+    paths:
+      - "src/deckforge/**"
+      - "src/test/deckforge/**"
+      - "tools/deckforge_core/**"
+      - ".github/workflows/deckforge-core.yml"
+  pull_request:
+    paths:
+      - "src/deckforge/**"
+      - "src/test/deckforge/**"
+      - "tools/deckforge_core/**"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  core-tests:
+    name: Core tests (Ubuntu, with sanitizers)
+    runs-on: ubuntu-24.04
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Install Qt 6 Core and GoogleTest
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y qt6-base-dev libgtest-dev ninja-build
+
+      - name: Configure
+        run: >
+          cmake -S tools/deckforge_core -B build-core -G Ninja
+          -DCMAKE_BUILD_TYPE=Debug
+          "-DCMAKE_CXX_FLAGS=-fsanitize=address,undefined -fno-omit-frame-pointer"
+
+      - name: Build
+        run: cmake --build build-core
+
+      - name: Test
+        run: ctest --test-dir build-core --output-on-failure

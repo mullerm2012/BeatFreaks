@@ -1262,6 +1262,12 @@ add_library(
   src/controllers/scripting/legacy/scriptconnectionjsproxy.cpp
   src/controllers/softtakeover.cpp
   src/coreservices.cpp
+  src/deckforge/automation/automationlane.cpp
+  src/deckforge/automation/automationrecorder.cpp
+  src/deckforge/diagnostics/dflog.cpp
+  src/deckforge/diagnostics/diagnosticreport.cpp
+  src/deckforge/diagnostics/hardwaretest.cpp
+  src/deckforge/project/dfproject.cpp
   src/database/mixxxdb.cpp
   src/database/schemamanager.cpp
   src/dialog/dlgabout.cpp
@@ -2874,6 +2880,9 @@ if(BUILD_TESTING)
     src/test/analyzersilence_test.cpp
     src/test/audiotaperpot_test.cpp
     src/test/autodjprocessor_test.cpp
+    src/test/deckforge/automationlane_test.cpp
+    src/test/deckforge/automationrecorder_test.cpp
+    src/test/deckforge/dfproject_test.cpp
     src/test/beatgridtest.cpp
     src/test/beatmaptest.cpp
     src/test/beatstest.cpp
