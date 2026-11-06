@@ -164,3 +164,25 @@ TEST(SmartNextTest, MaxResults) {
     s.maxResults = 5;
     EXPECT_EQ(5u, SmartNext::rank(playing, lib, s).size());
 }
+
+TEST(EnergyAnalyzerTest, StreamingStereoMatchesOneShot) {
+    const auto mono = kickPattern(126, 6, 0.8f, true);
+    const auto oneShot = EnergyAnalyzer::analyze(mono, kRate);
+    // Same audio as interleaved stereo, fed in odd-sized chunks.
+    std::vector<float> stereo(mono.size() * 2);
+    for (std::size_t i = 0; i < mono.size(); ++i) {
+        stereo[2 * i] = mono[i];
+        stereo[2 * i + 1] = mono[i];
+    }
+    EnergyAccumulator acc(kRate);
+    std::size_t pos = 0;
+    const std::size_t chunk = 1237;
+    while (pos < mono.size()) {
+        const std::size_t n = std::min(chunk, mono.size() - pos);
+        acc.feed(stereo.data() + 2 * pos, n, 2);
+        pos += n;
+    }
+    const auto streamed = acc.result();
+    EXPECT_NEAR(oneShot.score, streamed.score, 1e-9);
+    EXPECT_NEAR(oneShot.onsetsPerSecond, streamed.onsetsPerSecond, 1e-9);
+}

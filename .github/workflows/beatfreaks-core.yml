@@ -32,7 +32,7 @@ jobs:
       - name: Install Qt 6 Core and GoogleTest
         run: |
           sudo apt-get update
-          sudo apt-get install -y qt6-base-dev libgtest-dev ninja-build
+          sudo apt-get install -y qt6-base-dev libqt6sql6-sqlite libgtest-dev ninja-build
 
       - name: Configure
         run: >

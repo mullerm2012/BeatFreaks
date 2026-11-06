@@ -26,6 +26,33 @@ struct EnergyResult {
     double onsetsPerSecond = 0.0; ///< how busy the rhythm is
 };
 
+/// Streaming version: feed audio chunk by chunk (as Mixxx's analysis does)
+/// without keeping the whole song in memory.
+class EnergyAccumulator {
+  public:
+    explicit EnergyAccumulator(double sampleRate);
+    /// Feed interleaved samples in [-1, 1]; channels are mixed to mono.
+    void feed(const float* samples, std::size_t frameCount, int channels = 1);
+    /// The result for everything fed so far. Needs at least one second.
+    EnergyResult result() const;
+
+  private:
+    double m_sampleRate;
+    double m_alpha;          ///< low-pass coefficient (~150 Hz)
+    std::size_t m_frameLen;  ///< samples per 50 ms frame
+    double m_low = 0.0;
+    double m_totalSquares = 0.0;
+    double m_lowSquares = 0.0;
+    std::size_t m_samples = 0;
+    double m_frameSum = 0.0;
+    std::size_t m_inFrame = 0;
+    // onset detection state
+    std::size_t m_frames = 0;
+    std::size_t m_onsets = 0;
+    double m_average = 0.0;
+    bool m_armed = true;
+};
+
 class EnergyAnalyzer {
   public:
     /// mono samples in [-1, 1]. Needs at least one second of audio.

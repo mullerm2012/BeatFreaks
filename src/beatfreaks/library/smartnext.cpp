@@ -17,59 +17,56 @@ double clamp01(double v) {
 
 // ---------------------------------------------------------------- Energy --
 
-EnergyResult EnergyAnalyzer::analyze(const std::vector<float>& mono, double sampleRate) {
+EnergyAccumulator::EnergyAccumulator(double sampleRate)
+        : m_sampleRate(sampleRate > 0.0 ? sampleRate : 44100.0),
+          // One-pole low-pass at ~150 Hz isolates the kick and bass.
+          m_alpha(1.0 - std::exp(-2.0 * M_PI * 150.0 / m_sampleRate)),
+          // 50 ms frames for loudness and onset detection.
+          m_frameLen(std::max<std::size_t>(1, static_cast<std::size_t>(m_sampleRate * 0.05))) {
+}
+
+void EnergyAccumulator::feed(const float* samples, std::size_t frameCount, int channels) {
+    if (samples == nullptr || channels < 1) {
+        return;
+    }
+    for (std::size_t f = 0; f < frameCount; ++f) {
+        double x = 0.0;
+        for (int c = 0; c < channels; ++c) {
+            x += samples[f * static_cast<std::size_t>(channels) + static_cast<std::size_t>(c)];
+        }
+        x /= channels;
+        m_low += m_alpha * (x - m_low);
+        m_totalSquares += x * x;
+        m_lowSquares += m_low * m_low;
+        m_frameSum += x * x;
+        ++m_samples;
+        if (++m_inFrame == m_frameLen) {
+            const double e = m_frameSum / static_cast<double>(m_frameLen);
+            // Onsets: frames whose energy jumps well above the recent average.
+            if (m_frames > 0 && m_armed && e > 2.0 * m_average && e > 1e-6) {
+                ++m_onsets;
+                m_armed = false; // one onset per attack
+            } else if (e < 1.2 * m_average) {
+                m_armed = true;
+            }
+            m_average = m_frames == 0 ? e : 0.8 * m_average + 0.2 * e;
+            ++m_frames;
+            m_frameSum = 0.0;
+            m_inFrame = 0;
+        }
+    }
+}
+
+EnergyResult EnergyAccumulator::result() const {
     EnergyResult result;
-    if (sampleRate <= 0.0 || mono.size() < static_cast<std::size_t>(sampleRate)) {
+    if (m_samples < static_cast<std::size_t>(m_sampleRate)) {
         return result;
     }
-
-    // One-pole low-pass at ~150 Hz isolates the kick and bass.
-    const double cutoff = 150.0;
-    const double alpha = 1.0 - std::exp(-2.0 * M_PI * cutoff / sampleRate);
-
-    // 50 ms frames for loudness and onset detection.
-    const std::size_t frame = std::max<std::size_t>(1, static_cast<std::size_t>(sampleRate * 0.05));
-    double low = 0.0;
-    double totalSquares = 0.0;
-    double lowSquares = 0.0;
-    std::vector<double> frameEnergy;
-    frameEnergy.reserve(mono.size() / frame + 1);
-    double frameSum = 0.0;
-    std::size_t inFrame = 0;
-    for (float s : mono) {
-        const double x = s;
-        low += alpha * (x - low);
-        totalSquares += x * x;
-        lowSquares += low * low;
-        frameSum += x * x;
-        if (++inFrame == frame) {
-            frameEnergy.push_back(frameSum / static_cast<double>(frame));
-            frameSum = 0.0;
-            inFrame = 0;
-        }
-    }
-
-    const double meanSquare = totalSquares / static_cast<double>(mono.size());
-    const double rms = std::sqrt(meanSquare);
+    const double rms = std::sqrt(m_totalSquares / static_cast<double>(m_samples));
     result.loudnessDb = rms > 1e-9 ? 20.0 * std::log10(rms) : -90.0;
-    result.lowEndShare = totalSquares > 1e-12 ? clamp01(lowSquares / totalSquares) : 0.0;
-
-    // Onsets: frames whose energy jumps well above the recent average.
-    std::size_t onsets = 0;
-    double average = 0.0;
-    bool armed = true;
-    for (std::size_t i = 0; i < frameEnergy.size(); ++i) {
-        const double e = frameEnergy[i];
-        if (i > 0 && armed && e > 2.0 * average && e > 1e-6) {
-            ++onsets;
-            armed = false; // one onset per attack
-        } else if (e < 1.2 * average) {
-            armed = true;
-        }
-        average = i == 0 ? e : 0.8 * average + 0.2 * e;
-    }
-    const double seconds = static_cast<double>(mono.size()) / sampleRate;
-    result.onsetsPerSecond = static_cast<double>(onsets) / seconds;
+    result.lowEndShare = m_totalSquares > 1e-12 ? clamp01(m_lowSquares / m_totalSquares) : 0.0;
+    const double seconds = static_cast<double>(m_samples) / m_sampleRate;
+    result.onsetsPerSecond = static_cast<double>(m_onsets) / seconds;
 
     // Combine. Each part maps to 0–1, weighted to a 0–10 score.
     // Loudness: -30 dBFS (quiet) … -8 dBFS (club master).
@@ -80,6 +77,15 @@ EnergyResult EnergyAnalyzer::analyze(const std::vector<float>& mono, double samp
     const double busy = clamp01(result.onsetsPerSecond / 4.0);
     result.score = 10.0 * (0.45 * loud + 0.30 * punch + 0.25 * busy);
     return result;
+}
+
+EnergyResult EnergyAnalyzer::analyze(const std::vector<float>& mono, double sampleRate) {
+    if (sampleRate <= 0.0) {
+        return EnergyResult{};
+    }
+    EnergyAccumulator acc(sampleRate);
+    acc.feed(mono.data(), mono.size(), 1);
+    return acc.result();
 }
 
 // ------------------------------------------------------------- Camelot ----

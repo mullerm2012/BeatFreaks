@@ -1185,6 +1185,7 @@ add_library(
   EXCLUDE_FROM_ALL
   src/analyzer/analyzerbeats.cpp
   src/analyzer/analyzerebur128.cpp
+  src/analyzer/analyzerenergy.cpp
   src/analyzer/analyzergain.cpp
   src/analyzer/analyzerkey.cpp
   src/analyzer/analyzerscheduledtrack.cpp
@@ -1267,6 +1268,7 @@ add_library(
   src/beatfreaks/diagnostics/bflog.cpp
   src/beatfreaks/diagnostics/diagnosticreport.cpp
   src/beatfreaks/diagnostics/hardwaretest.cpp
+  src/beatfreaks/library/energystore.cpp
   src/beatfreaks/library/smartnext.cpp
   src/beatfreaks/project/bfproject.cpp
   src/database/mixxxdb.cpp
@@ -2885,6 +2887,7 @@ if(BUILD_TESTING)
     src/test/beatfreaks/automationlane_test.cpp
     src/test/beatfreaks/automationrecorder_test.cpp
     src/test/beatfreaks/bfproject_test.cpp
+    src/test/beatfreaks/energystore_test.cpp
     src/test/beatfreaks/smartnext_test.cpp
     src/test/beatgridtest.cpp
     src/test/beatmaptest.cpp
