@@ -39,6 +39,10 @@ struct TracklistOptions {
     QString djName;
     QString date;             ///< ISO date, e.g. "2026-11-06"
     bool creditBeatFreaks = true;
+    /// Put the songs' album art on the mix cover. Off by default: owning a
+    /// song does not mean you may publish its artwork, so the default cover
+    /// is BeatFreaks' own art + title band. The UI shows a rights warning.
+    bool useTrackArtwork = false;
 };
 
 struct TracklistStats {
@@ -96,8 +100,10 @@ struct MixCoverPlan {
     QString title;
     QString subtitle;         ///< "DJ · date · N tracks"
 
-    /// Picks the most-played distinct artworks (up to 9) and lays them out
-    /// in the largest full square grid; the title band covers the bottom.
+    /// With options.useTrackArtwork: picks the most-played distinct artworks
+    /// (up to 9) in the largest full square grid. Without it (default): no
+    /// tiles, the renderer uses BeatFreaks' original art. The title band
+    /// always covers the bottom fifth.
     static MixCoverPlan make(const Tracklist& list, const TracklistOptions& options, int size = 3000);
 };
 

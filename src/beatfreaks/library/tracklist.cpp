@@ -18,7 +18,13 @@ bool sameSong(const PlayedTrack& a, const PlayedTrack& b) {
             a.title.compare(b.title, Qt::CaseInsensitive) == 0;
 }
 
-QString csvField(const QString& s) {
+QString csvField(QString s) {
+    // Spreadsheet formula injection: a cell starting with = + - @ (or a tab /
+    // carriage return before one) can run as a formula. Make it plain text.
+    static const QString risky = QStringLiteral("=+-@\t\r");
+    if (!s.isEmpty() && risky.contains(s.at(0))) {
+        s.prepend(QLatin1Char('\''));
+    }
     if (s.contains(QLatin1Char(',')) || s.contains(QLatin1Char('"')) ||
             s.contains(QLatin1Char('\n'))) {
         QString q = s;
@@ -38,14 +44,20 @@ QString cueText(QString s) {
 
 Tracklist::Tracklist(QList<PlayedTrack> played, TracklistOptions options)
         : m_options(std::move(options)) {
+    // clean times first: a NaN would break the sort order
+    for (PlayedTrack& t : played) {
+        if (!std::isfinite(t.startSeconds) || t.startSeconds < 0) {
+            t.startSeconds = 0;
+        }
+        if (!std::isfinite(t.playedSeconds) || t.playedSeconds < 0) {
+            t.playedSeconds = 0;
+        }
+    }
     std::stable_sort(played.begin(), played.end(), [](const PlayedTrack& a, const PlayedTrack& b) {
         return a.startSeconds < b.startSeconds;
     });
     for (int i = 0; i < played.size(); ++i) {
-        PlayedTrack t = played[i];
-        if (!std::isfinite(t.startSeconds) || t.startSeconds < 0) {
-            t.startSeconds = 0;
-        }
+        const PlayedTrack& t = played[i];
         const bool last = i == played.size() - 1;
         // unknown length: use the gap to the next song
         double length = t.playedSeconds;
@@ -268,7 +280,7 @@ MixCoverPlan MixCoverPlan::make(const Tracklist& list, const TracklistOptions& o
     QHash<QString, double> airTime;
     QStringList order;
     for (const PlayedTrack& t : list.tracks()) {
-        if (t.coverArtPath.isEmpty()) {
+        if (!options.useTrackArtwork || t.coverArtPath.isEmpty()) {
             continue;
         }
         if (!airTime.contains(t.coverArtPath)) {

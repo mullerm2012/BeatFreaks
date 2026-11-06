@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <QJsonArray>
+#include <limits>
 
 #include "beatfreaks/library/tracklist.h"
 
@@ -128,6 +129,36 @@ TEST(Tracklist, CsvEscapes) {
                                   "1,0:00:00,\"Smith, J\",\"Say \"\"hi\"\"\",8A,124.5,no\n"));
 }
 
+TEST(Tracklist, CsvBlocksSpreadsheetFormulas) {
+    TracklistOptions keepAll;
+    keepAll.minPlaySeconds = 0;
+    const QString csv = Tracklist({song("=HYPERLINK(\"x\")", "+1", 0, 100, 0, "-8A"),
+                                          song("@SUM(A1)", "\t=cmd", 100, 100)},
+            keepAll)
+                                .toCsv();
+    EXPECT_TRUE(csv.contains(QStringLiteral("\"'=HYPERLINK(\"\"x\"\")\"")));
+    EXPECT_TRUE(csv.contains(QStringLiteral(",'+1,'-8A,")));
+    EXPECT_TRUE(csv.contains(QStringLiteral("'@SUM(A1)")));
+    EXPECT_TRUE(csv.contains(QStringLiteral("'\t=cmd")));
+    EXPECT_FALSE(csv.contains(QStringLiteral(",=")));
+}
+
+TEST(Tracklist, BadTimestampsAndUnknownLastLength) {
+    PlayedTrack a = song("A", "x", std::numeric_limits<double>::quiet_NaN(), 120);
+    PlayedTrack b = song("B", "y", -50, 0);
+    PlayedTrack c = song("C", "z", 300, 0); // still playing: length unknown
+    const Tracklist list({a, b, c});
+    // bad times become 0:00; input order is kept for equal times
+    ASSERT_EQ(list.tracks().size(), 3);
+    EXPECT_EQ(list.tracks()[0].artist, QStringLiteral("A"));
+    EXPECT_DOUBLE_EQ(list.tracks()[0].startSeconds, 0.0);
+    EXPECT_DOUBLE_EQ(list.tracks()[1].startSeconds, 0.0);
+    EXPECT_EQ(list.tracks().last().artist, QStringLiteral("C"));
+    EXPECT_DOUBLE_EQ(list.stats().lengthSeconds, 300.0);
+    EXPECT_FALSE(list.toText().contains(QStringLiteral("nan")));
+    EXPECT_TRUE(list.toCue(QStringLiteral("m.wav")).contains(QStringLiteral("INDEX 01 05:00:00")));
+}
+
 TEST(Tracklist, StatsAndJson) {
     QList<PlayedTrack> played = set();
     played[1].aiMade = true;
@@ -152,8 +183,17 @@ TEST(Tracklist, NamesWithoutTags) {
     EXPECT_EQ(Tracklist::displayName(PlayedTrack{}), QStringLiteral("Unknown"));
 }
 
+TEST(MixCover, AlbumArtIsOptIn) {
+    // default: no album art (publishing rights), BeatFreaks art + title band
+    const MixCoverPlan p = MixCoverPlan::make(Tracklist(set()), {}, 3000);
+    EXPECT_EQ(p.grid, 0);
+    EXPECT_TRUE(p.tiles.isEmpty());
+    EXPECT_EQ(p.titleBandY + p.titleBandHeight, 3000);
+}
+
 TEST(MixCover, GridFromArtwork) {
     TracklistOptions o;
+    o.useTrackArtwork = true;
     o.mixTitle = QStringLiteral("Freak Friday");
     o.djName = QStringLiteral("mullerm2012");
     const MixCoverPlan four = MixCoverPlan::make(Tracklist(set()), o, 3000);
@@ -187,7 +227,9 @@ TEST(MixCover, NineTilesMax) {
         many << song("A", QByteArray::number(i).constData(), i * 100.0, 100, 0, "",
                 QByteArray("/art/" + QByteArray::number(i) + ".jpg").constData());
     }
-    const MixCoverPlan p = MixCoverPlan::make(Tracklist(many), {}, 900);
+    TracklistOptions o;
+    o.useTrackArtwork = true;
+    const MixCoverPlan p = MixCoverPlan::make(Tracklist(many), o, 900);
     EXPECT_EQ(p.grid, 3);
     EXPECT_EQ(p.tiles.size(), 9);
     EXPECT_EQ(p.tiles[8].x, 600);
