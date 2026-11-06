@@ -83,12 +83,21 @@ jobs:
           "run_id=$id" >> $env:GITHUB_OUTPUT
           Write-Host "Using installer from run $id"
 
+      # The installer build uploads the .msi as-is (upload-artifact v7,
+      # archive: false), which `gh run download` can't unpack, so use the
+      # matching download action.
       - name: Download the installer
+        uses: actions/download-artifact@v7
+        with:
+          run-id: ${{ steps.find.outputs.run_id }}
+          github-token: ${{ github.token }}
+          pattern: "*.msi"
+          path: installer
+
+      - name: Pick the installer
         shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
         run: |
-          gh run download ${{ steps.find.outputs.run_id }} -R ${{ github.repository }} --dir installer
+          Get-ChildItem installer -Recurse | ForEach-Object { Write-Host "downloaded: $($_.FullName) ($($_.Length) bytes)" }
           $msi = @(Get-ChildItem installer -Recurse -Filter *.msi)
           if ($msi.Count -ne 1) { throw "Expected exactly one .msi, found $($msi.Count)" }
           Write-Host "Installer: $($msi[0].FullName)"
