@@ -1,6 +1,7 @@
 #include <gtest/gtest.h>
 
 #include <cmath>
+#include <algorithm>
 #include <random>
 
 #include "beatfreaks/library/smartnext.h"
@@ -99,12 +100,19 @@ TEST(CamelotTest, CompatibilityFollowsTheWheel) {
 TEST(SmartNextTest, BpmMatchIncludingHalfAndDoubleTime) {
     SmartNextSettings s;
     s.maxBpmChangePercent = 6.0;
-    EXPECT_NEAR(0.0, *SmartNext::bpmChangePercent(124, 124, s), 1e-9);
-    EXPECT_NEAR(124.0 / 122.0 * 100.0 - 100.0, *SmartNext::bpmChangePercent(124, 122, s), 1e-9);
-    EXPECT_NEAR(0.0, *SmartNext::bpmChangePercent(124, 62, s), 1e-9); // half time
-    EXPECT_FALSE(SmartNext::bpmChangePercent(124, 100, s).has_value());
+    EXPECT_NEAR(0.0, SmartNext::matchBpm(124, 124, s)->changePercent, 1e-9);
+    EXPECT_NEAR(124.0 / 122.0 * 100.0 - 100.0, SmartNext::matchBpm(124, 122, s)->changePercent, 1e-9);
+    const auto half = SmartNext::matchBpm(124, 62, s); // 62 BPM played double time
+    ASSERT_TRUE(half.has_value());
+    EXPECT_NEAR(0.0, half->changePercent, 1e-9);
+    EXPECT_DOUBLE_EQ(2.0, half->multiplier);
+    EXPECT_DOUBLE_EQ(0.5, SmartNext::matchBpm(62, 124, s)->multiplier);
+    EXPECT_FALSE(SmartNext::matchBpm(124, 100, s).has_value());
+    EXPECT_FALSE(SmartNext::matchBpm(124, std::nan(""), s).has_value());
+    EXPECT_FALSE(SmartNext::matchBpm(0, 124, s).has_value());
+    EXPECT_FALSE(SmartNext::matchBpm(124, -5, s).has_value());
     s.allowHalfDoubleTime = false;
-    EXPECT_FALSE(SmartNext::bpmChangePercent(124, 62, s).has_value());
+    EXPECT_FALSE(SmartNext::matchBpm(124, 62, s).has_value());
 }
 
 TEST(SmartNextTest, RanksKeyAndTempoMatchesFirst) {
@@ -118,9 +126,9 @@ TEST(SmartNextTest, RanksKeyAndTempoMatchesFirst) {
     };
     const auto ranked = SmartNext::rank(playing, lib, SmartNextSettings{});
     ASSERT_EQ(3u, ranked.size()); // "now" and "too-slow" are excluded
-    EXPECT_EQ("perfect", ranked[0].track->id);
-    EXPECT_EQ("neighbour", ranked[1].track->id);
-    EXPECT_EQ("clash", ranked[2].track->id);
+    EXPECT_EQ("perfect", ranked[0].trackId);
+    EXPECT_EQ("neighbour", ranked[1].trackId);
+    EXPECT_EQ("clash", ranked[2].trackId);
     EXPECT_NE(std::string::npos, ranked[1].reason.find("8A→9A"));
 }
 
@@ -132,9 +140,9 @@ TEST(SmartNextTest, EnergyDirectionChangesTheOrder) {
     };
     SmartNextSettings s;
     s.direction = EnergyDirection::Build;
-    EXPECT_EQ("harder", SmartNext::rank(playing, lib, s)[0].track->id);
+    EXPECT_EQ("harder", SmartNext::rank(playing, lib, s)[0].trackId);
     s.direction = EnergyDirection::CoolDown;
-    EXPECT_EQ("softer", SmartNext::rank(playing, lib, s)[0].track->id);
+    EXPECT_EQ("softer", SmartNext::rank(playing, lib, s)[0].trackId);
 }
 
 TEST(SmartNextTest, CrowdMoversAndRepeats) {
@@ -149,8 +157,8 @@ TEST(SmartNextTest, CrowdMoversAndRepeats) {
     lib[2].timesPlayedTonight = 1;
     const auto ranked = SmartNext::rank(playing, lib, SmartNextSettings{});
     ASSERT_EQ(3u, ranked.size());
-    EXPECT_EQ("mover", ranked[0].track->id);
-    EXPECT_EQ("played", ranked[2].track->id); // repeats go last, even if loved
+    EXPECT_EQ("mover", ranked[0].trackId);
+    EXPECT_EQ("played", ranked[2].trackId); // repeats go last, even if loved
     EXPECT_NE(std::string::npos, ranked[0].reason.find("crowd mover"));
 }
 
@@ -185,4 +193,47 @@ TEST(EnergyAnalyzerTest, StreamingStereoMatchesOneShot) {
     const auto streamed = acc.result();
     EXPECT_NEAR(oneShot.score, streamed.score, 1e-9);
     EXPECT_NEAR(oneShot.onsetsPerSecond, streamed.onsetsPerSecond, 1e-9);
+}
+
+TEST(SmartNextTest, SkipsEmptyAndDuplicateIdsAndOwnsItsData) {
+    const TrackInfo playing = track("now", 124, "8A", 6.0);
+    std::vector<Suggestion> ranked;
+    {
+        std::vector<TrackInfo> lib{
+                track("", 124, "8A", 6.0),
+                track("a", 124, "8A", 6.0),
+                track("a", 124, "8A", 6.0),
+                track("half", 62, "8A", 6.0),
+                track("nobpm", std::nan(""), "8A", 6.0),
+        };
+        ranked = SmartNext::rank(playing, lib, SmartNextSettings{});
+    } // library gone: suggestions must still be valid
+    ASSERT_EQ(3u, ranked.size());
+    std::vector<std::string> ids;
+    for (const auto& r : ranked) {
+        ids.push_back(r.trackId);
+    }
+    EXPECT_EQ(1, std::count(ids.begin(), ids.end(), "a"));
+    EXPECT_EQ(1, std::count(ids.begin(), ids.end(), "half"));
+    EXPECT_EQ(1, std::count(ids.begin(), ids.end(), "nobpm"));
+    for (const auto& r : ranked) {
+        if (r.trackId == "half") {
+            EXPECT_NE(std::string::npos, r.reason.find("double time"));
+        }
+    }
+}
+
+TEST(SmartNextTest, TiesAreOrderedByTitleThenId) {
+    const TrackInfo playing = track("now", 124, "8A", 6.0);
+    std::vector<TrackInfo> lib{
+            track("z-id", 124, "8A", 6.0),
+            track("b", 124, "8A", 6.0),
+            track("a", 124, "8A", 6.0),
+    };
+    lib[0].title = "a";
+    const auto ranked = SmartNext::rank(playing, lib, SmartNextSettings{});
+    ASSERT_EQ(3u, ranked.size());
+    EXPECT_EQ("a", ranked[0].trackId);    // title "a", id "a"
+    EXPECT_EQ("z-id", ranked[1].trackId); // title "a", id "z-id"
+    EXPECT_EQ("b", ranked[2].trackId);
 }

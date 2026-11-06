@@ -146,23 +146,24 @@ double keyCompatibility(const CamelotKey& from, const CamelotKey& to) {
 
 // ----------------------------------------------------------- SmartNext ----
 
-std::optional<double> SmartNext::bpmChangePercent(
+std::optional<BpmMatch> SmartNext::matchBpm(
         double fromBpm, double toBpm, const SmartNextSettings& settings) {
-    if (fromBpm <= 0.0 || toBpm <= 0.0) {
-        return std::nullopt;
+    if (!(fromBpm > 0.0) || !(toBpm > 0.0) || !std::isfinite(fromBpm) ||
+            !std::isfinite(toBpm)) {
+        return std::nullopt; // unknown, zero, negative or NaN
     }
-    std::vector<double> candidates{toBpm};
+    std::vector<double> multipliers{1.0};
     if (settings.allowHalfDoubleTime) {
-        candidates.push_back(toBpm * 2.0);
-        candidates.push_back(toBpm / 2.0);
+        multipliers.push_back(2.0);
+        multipliers.push_back(0.5);
     }
-    std::optional<double> best;
-    for (double bpm : candidates) {
+    std::optional<BpmMatch> best;
+    for (double m : multipliers) {
         // Pitch change needed on the incoming track to match the playing one.
-        const double change = (fromBpm / bpm - 1.0) * 100.0;
+        const double change = (fromBpm / (toBpm * m) - 1.0) * 100.0;
         if (std::fabs(change) <= settings.maxBpmChangePercent + 1e-9 &&
-                (!best || std::fabs(change) < std::fabs(*best))) {
-            best = change;
+                (!best || std::fabs(change) < std::fabs(best->changePercent))) {
+            best = BpmMatch{change, m};
         }
     }
     return best;
@@ -173,19 +174,25 @@ std::vector<Suggestion> SmartNext::rank(const TrackInfo& playing,
         const SmartNextSettings& settings) {
     std::vector<Suggestion> fresh;
     std::vector<Suggestion> repeats;
-    for (const auto& track : candidates) {
-        if (track.id == playing.id) {
+    std::vector<std::string> seen;
+    const auto known = [](double bpm) { return bpm > 0.0 && std::isfinite(bpm); };
+    for (std::size_t index = 0; index < candidates.size(); ++index) {
+        const TrackInfo& track = candidates[index];
+        if (track.id.empty() || track.id == playing.id ||
+                std::find(seen.begin(), seen.end(), track.id) != seen.end()) {
             continue;
         }
-        const auto change = bpmChangePercent(playing.bpm, track.bpm, settings);
-        if (!change && playing.bpm > 0.0 && track.bpm > 0.0) {
+        seen.push_back(track.id);
+        const auto change = matchBpm(playing.bpm, track.bpm, settings);
+        if (!change && known(playing.bpm) && known(track.bpm)) {
             continue; // tempo too far apart to mix
         }
 
         // Each part 0–1.
         const double keyPart = keyCompatibility(playing.key, track.key);
         const double bpmPart = change
-                ? 1.0 - std::fabs(*change) / std::max(0.1, settings.maxBpmChangePercent)
+                ? 1.0 - std::fabs(change->changePercent) /
+                        std::max(0.1, settings.maxBpmChangePercent)
                 : 0.5;
 
         double energyPart = 0.5;
@@ -217,8 +224,13 @@ std::vector<Suggestion> SmartNext::rank(const TrackInfo& playing,
                 : 0.5;
 
         Suggestion s;
-        s.track = &track;
-        s.bpmChangePercent = change.value_or(0.0);
+        s.trackId = track.id;
+        s.title = track.title;
+        s.artist = track.artist;
+        s.candidateIndex = index;
+        if (change) {
+            s.bpm = *change;
+        }
         s.score = 100.0 *
                 (0.32 * keyPart + 0.25 * bpmPart + 0.23 * energyPart + 0.12 * crowdPart +
                         0.08 * genrePart);
@@ -228,7 +240,13 @@ std::vector<Suggestion> SmartNext::rank(const TrackInfo& playing,
         if (change) {
             reason.setf(std::ios::fixed);
             reason.precision(1);
-            reason << " · " << (*change >= 0 ? "+" : "") << *change << "%";
+            reason << " · " << (change->changePercent >= 0 ? "+" : "")
+                   << change->changePercent << "%";
+            if (change->multiplier == 2.0) {
+                reason << " (double time)";
+            } else if (change->multiplier == 0.5) {
+                reason << " (half time)";
+            }
         }
         if (playing.energy >= 0.0 && track.energy >= 0.0) {
             reason << " · energy "
@@ -242,7 +260,13 @@ std::vector<Suggestion> SmartNext::rank(const TrackInfo& playing,
         (track.timesPlayedTonight > 0 ? repeats : fresh).push_back(s);
     }
     auto byScore = [](const Suggestion& a, const Suggestion& b) {
-        return a.score > b.score;
+        if (a.score != b.score) {
+            return a.score > b.score;
+        }
+        if (a.title != b.title) {
+            return a.title < b.title;
+        }
+        return a.trackId < b.trackId;
     };
     std::sort(fresh.begin(), fresh.end(), byScore);
     std::sort(repeats.begin(), repeats.end(), byScore);

@@ -108,22 +108,36 @@ struct SmartNextSettings {
     std::size_t maxResults = 10;
 };
 
+/// How a candidate's tempo lines up with the playing track.
+struct BpmMatch {
+    double changePercent = 0.0; ///< pitch change on the incoming track (signed)
+    double multiplier = 1.0;    ///< 1 = same time, 2 = played double time, 0.5 = half time
+};
+
+/// One ranked candidate. Owns its data (no pointers into the library), so a
+/// panel can keep it after the library snapshot is gone.
 struct Suggestion {
-    const TrackInfo* track = nullptr;
-    double score = 0.0;      ///< 0–100, higher is better
-    double bpmChangePercent = 0.0; ///< pitch change needed to match (signed)
-    std::string reason;      ///< short, human-readable: "Key 8A→9A · +1.6% · energy ↑"
+    std::string trackId;
+    std::string title;
+    std::string artist;
+    std::size_t candidateIndex = 0; ///< position in the list passed to rank()
+    double score = 0.0;             ///< 0–100, higher is better
+    BpmMatch bpm;                   ///< tempo match (only meaningful if both BPMs known)
+    std::string reason;             ///< "Key 8A→9A · +1.6% · energy ↑"
 };
 
 class SmartNext {
   public:
     /// BPM match: the pitch change (percent) to bring `to` to `from`'s tempo,
-    /// trying half/double time when allowed. nullopt if out of range.
-    static std::optional<double> bpmChangePercent(
+    /// trying half/double time when allowed. nullopt if out of range or a
+    /// BPM is unknown (<= 0 or not a number).
+    static std::optional<BpmMatch> matchBpm(
             double fromBpm, double toBpm, const SmartNextSettings& settings);
 
     /// Rank candidates against the playing track. Skips the playing track
-    /// itself and tracks already played tonight unless nothing else fits.
+    /// itself, tracks with an empty id, and duplicate ids. Tracks already
+    /// played tonight go last. Equal scores are ordered by title, then id,
+    /// so the list never jumps around between refreshes.
     static std::vector<Suggestion> rank(const TrackInfo& playing,
             const std::vector<TrackInfo>& candidates,
             const SmartNextSettings& settings);
