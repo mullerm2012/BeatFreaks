@@ -1,13 +1,18 @@
 #pragma once
 
 // DeckForge automation recorder and player.
-// Plain C++17, no Qt. The Mixxx glue (deckforge/automation/mixxxbridge.*)
-// feeds control changes in and writes played-back values out.
+// Plain C++17, no Qt. The Mixxx glue feeds control changes in and writes
+// played-back values out.
+//
+// Rule the recorder keeps: a pass only changes the lane where you actually
+// recorded. Outside that region (before a touch, after a release, outside the
+// punch range) the curve is exactly what it was before the pass.
 
 #include <functional>
 #include <map>
 #include <set>
 #include <string>
+#include <utility>
 
 #include "deckforge/automation/automationlane.h"
 
@@ -38,15 +43,19 @@ struct RecorderSettings {
     double punchOutBeat = 0.0;
     /// Only these groups record ("[Channel3]"). Empty = every group is armed.
     std::set<std::string> armedGroups;
-    /// Applied to each touched lane when a pass stops. 0 disables thinning.
+    /// Applied to the recorded part of each lane when a pass stops. 0 disables.
     double thinTolerance = 0.002;
 };
 
 /// Turns a stream of control changes into automation lanes.
 /// Call controlChanged() for every change, advance() regularly with the
 /// current transport position, and start()/stop() around a recording pass.
+/// Jumping backwards (a loop or a seek) is allowed at any time.
 class AutomationRecorder {
   public:
+    /// The gap used to join new and old automation without a sloped seam.
+    static constexpr double kJoinBeats = 1.0 / 1024.0;
+
     explicit AutomationRecorder(LaneMap& lanes);
 
     void setSettings(const RecorderSettings& settings) {
@@ -56,6 +65,7 @@ class AutomationRecorder {
         return m_settings;
     }
 
+    /// Starts a pass. If a pass is running it is stopped first, at beat.
     void start(double beat);
     void stop(double beat);
     bool isRecording() const {
@@ -67,17 +77,17 @@ class AutomationRecorder {
     /// Returns true if the change was written to a lane.
     bool controlChanged(const std::string& key, double value, double beat, bool isToggle = false);
 
-    /// Move the recorder's clock forward. Releases Touch controls that have
-    /// rested long enough, holds Latch values, and closes the punch range.
+    /// Move the recorder's clock. Releases Touch controls that have rested
+    /// long enough, holds Latch values, and closes the punch range.
     void advance(double beat);
 
     /// True while this control is being written live, so playback must not
     /// overwrite it.
     bool isLive(const std::string& key) const {
-        return m_active.count(key) > 0;
+        return m_active.count(key) > 0 || m_latchedToggles.count(key) > 0;
     }
     std::size_t liveCount() const {
-        return m_active.size();
+        return m_active.size() + m_latchedToggles.size();
     }
     /// Number of changes written since the last start().
     std::size_t eventsRecorded() const {
@@ -86,26 +96,42 @@ class AutomationRecorder {
 
   private:
     struct ActiveControl {
-        double lastBeat = 0.0;       ///< where the lane was last written up to
+        double lastBeat = 0.0;       ///< the lane holds this pass's take up to here
         double lastValue = 0.0;      ///< the value the user left the control at
         double lastChangeBeat = 0.0; ///< when the control last moved
+    };
+    enum class Handback {
+        Glide, ///< Touch release: hold, then glide back to the old take
+        Cut,   ///< punch-out, Latch stop, loop: old take resumes exactly at the beat
     };
 
     bool isArmed(const std::string& key) const;
     bool inPunch(double beat) const;
-    /// Hand a control back to playback at beat, keeping its last value up to
-    /// there. With glideBack, ramp back to the take that existed before this
-    /// pass (if there was one).
-    void finish(const std::string& key, ActiveControl& active, double beat, bool glideBack);
+    double clampToPunchOut(double beat) const;
     AutomationLane& laneFor(const std::string& key, bool isToggle);
+    /// Snapshot of the lane before this pass first wrote to it.
+    const AutomationLane* before(const std::string& key) const;
+    void noteWritten(const std::string& key, double fromBeat, double toBeat);
+
+    void beginTouch(const std::string& key, double value, double beat);
+    /// Hand a control back to playback at beat.
+    void handback(const std::string& key, ActiveControl& active, double beat, Handback how);
+    void recordToggle(const std::string& key, double value, double beat);
+    void handbackToggle(const std::string& key, double beat);
 
     LaneMap& m_lanes;
     RecorderSettings m_settings;
     bool m_recording = false;
     std::map<std::string, ActiveControl> m_active;
-    std::set<std::string> m_touchedThisPass;
-    /// Each touched lane as it was before this pass, for gliding back.
+    /// Latch mode buttons: key -> beat up to which the old take was cleared.
+    std::map<std::string, double> m_latchedToggles;
     LaneMap m_before;
+    /// Each live control's lane as it was when this touch began: the take a
+    /// release returns to (after a loop, that is the first lap, not the
+    /// take from before the pass).
+    LaneMap m_touchBase;
+    /// Per lane, the beat range this pass wrote (for thinning).
+    std::map<std::string, std::pair<double, double>> m_written;
     std::size_t m_eventsRecorded = 0;
 };
 
@@ -118,7 +144,7 @@ class AutomationPlayer {
     explicit AutomationPlayer(const LaneMap& lanes, const AutomationRecorder* recorder = nullptr);
 
     /// Write every lane's value at beat through write(). Returns how many
-    /// values were sent.
+    /// values were sent. Sends nothing when the recorder's mode is Off.
     std::size_t process(double beat, const WriteFn& write);
 
     /// Forget what was sent, e.g. after a seek, so every lane is re-sent.

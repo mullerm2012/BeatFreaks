@@ -187,12 +187,23 @@ void simplify(const std::vector<AutomationPoint>& pts,
 } // namespace
 
 std::size_t AutomationLane::thin(double tolerance) {
-    if (m_points.size() < 3) {
+    return thin(-1e300, 1e300, tolerance);
+}
+
+std::size_t AutomationLane::thin(double fromBeat, double toBeat, double tolerance) {
+    if (m_points.size() < 3 || toBeat < fromBeat) {
         return 0;
     }
     std::vector<bool> keep(m_points.size(), false);
     keep.front() = true;
     keep.back() = true;
+    // Points outside the range are anchors: they are never dropped.
+    for (std::size_t i = 0; i < m_points.size(); ++i) {
+        if (m_points[i].beat < fromBeat - kBeatEpsilon ||
+                m_points[i].beat > toBeat + kBeatEpsilon) {
+            keep[i] = true;
+        }
+    }
     // Hold points (and the point right after one) mark steps; never drop them.
     for (std::size_t i = 0; i < m_points.size(); ++i) {
         if (m_points[i].shape == CurveShape::Hold) {

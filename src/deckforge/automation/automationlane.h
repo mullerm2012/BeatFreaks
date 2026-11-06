@@ -89,6 +89,9 @@ class AutomationLane {
     /// by no more than tolerance (in value units) are dropped. Hold points
     /// and the first and last point are always kept.
     std::size_t thin(double tolerance);
+    /// Same, but only points with fromBeat <= beat <= toBeat may be dropped,
+    /// so a recording pass never reshapes the take around it.
+    std::size_t thin(double fromBeat, double toBeat, double tolerance);
 
     bool operator==(const AutomationLane& other) const;
 

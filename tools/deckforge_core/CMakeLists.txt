@@ -34,6 +34,7 @@ add_executable(deckforge_core_tests
   ${MIXXX_SRC}/test/deckforge/automationlane_test.cpp
   ${MIXXX_SRC}/test/deckforge/automationrecorder_test.cpp
   ${MIXXX_SRC}/test/deckforge/dfproject_test.cpp
+  ${MIXXX_SRC}/test/deckforge/automation_edgecase_test.cpp
 )
 target_link_libraries(deckforge_core_tests PRIVATE deckforge_core GTest::gtest GTest::gtest_main)
 

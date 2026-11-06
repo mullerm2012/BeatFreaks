@@ -39,13 +39,16 @@ bool DfProject::moveClip(const QString& clipId, double deltaBeats) {
     if (it == clips.end()) {
         return false;
     }
+    // A clip cannot move before the start of the timeline; its automation
+    // moves by exactly the same (possibly shortened) distance.
+    const double delta = std::max(deltaBeats, -it->startBeat);
     const std::string group = channelGroup(it->channel).toStdString();
     for (auto& [key, lane] : lanes) {
         if (lane.group() == group) {
-            lane.shiftRange(it->startBeat, it->endBeat(), deltaBeats);
+            lane.shiftRange(it->startBeat, it->endBeat(), delta);
         }
     }
-    it->startBeat = std::max(0.0, it->startBeat + deltaBeats);
+    it->startBeat += delta;
     return true;
 }
 

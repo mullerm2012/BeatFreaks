@@ -2880,6 +2880,7 @@ if(BUILD_TESTING)
     src/test/analyzersilence_test.cpp
     src/test/audiotaperpot_test.cpp
     src/test/autodjprocessor_test.cpp
+    src/test/deckforge/automation_edgecase_test.cpp
     src/test/deckforge/automationlane_test.cpp
     src/test/deckforge/automationrecorder_test.cpp
     src/test/deckforge/dfproject_test.cpp
