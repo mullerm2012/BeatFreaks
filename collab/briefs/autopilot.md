@@ -183,3 +183,42 @@ Plan:
   during quieter moments, and the panel shows the time left.
 - Suno stays as the optional "Send to Suno" route for higher quality.
 - DATA: measure CPU render time for a 3-minute song on a normal laptop (A.7).
+
+
+## DATA additions — A.8 advanced transition recipes (proposals, 2026-11-06)
+
+All recipes assume validated phrase boundaries and a fallback to a clean bass-swap blend if cue/tempo/key confidence is low; no sudden unquantized autoplay. Automations remain editable in Arrange.
+
+| Recipe | Start / move / end | Best use | Guard / test |
+| --- | --- | --- | --- |
+| **Ghost-vocal teaser** | At minus 16 bars, play a licensed/included 1–2 bar *vocal stem* teaser from B at -15 dB through a high-pass, duck under A; at minus 8 bars silence stem and let A's phrase finish; drop full B on 1 | Familiar singalong tease into house or R&B; user can choose no vocals | Only if clean vocal stem and phrase boundary exist; no lyric overlap, conservative limiter; no unlicensed external sample |
+| **Percussion ladder** | Across 16 bars, add B's high percussion in 4-bar steps (low cut below 250 Hz); halve A's percussion gain at minus 4; swap basses on the bar-one transient | House → tech house / UK garage grooves with compatible BPM | Lock to downbeats; avoid doubled kicks, phase/level overshoot; test mono sum |
+| **Reverse-reverb vacuum** | Render or pre-buffer a *short authorized* reverse wash from B's first impact, swell over B's last 2 bars; pull A to -inf over the last beat; unprocessed B hits on 1; wash hard-gated after drop | Cinematic short setup before hip-hop/dancehall/EDM drop | Pre-render OFF real-time engine; no reverse of copyrighted audio outside permitted use; no clip/tail after downbeat |
+| **Rhythm-pivot handoff** | Convert A's final 8 bars to a percussion-only 2/4 or half-time pulse; build B's kick/snares in 4-bar phrases; cue B with a double/half-tempo match and explicit multiplier; B takes over on 1 | Hip-hop (70 BPM feel) ↔ house (140 BPM feel) without ugly tempo drag | Only with confident half/double BPM relationship; limit peak gain, preserve perceived pulse; don't stretch melodic vocals unexpectedly |
+
+Recommended recipe schema: `id`, `version`, `minimumConfidence`, `phraseBars`, `bpmMatchMultiplier`, `keyCompatibility`, `sourceSections`, `targetSections`, `actions[{beatOffset, control, value, ramp, curve}]`, `fallback`, `humanOverride`, `maxPeakDbtp`, and `latencyCompensationMs`. Recipe selects a candidate; planner checks source/target phrase, license, tempo, headroom and section confidence before it is armed. Stage A.4 takeover cancels queued automation immediately on manual intervention.
+
+## DATA additions — A.9 sound and effects tuning backlog
+
+Priority order for listening/build tests (not claims of existing defects):
+
+1. **Bass-swap / three-band EQ:** match perceived loudness; check sub-bass phase, DC offsets and 3–6 dB overlap boosts; automate low-end swap on beat one, with 8–20 ms smoothing to avoid clicks.
+2. **Filter sweeps:** resonance gain compensation across cutoff and Q, denormal protection, no excessive whistling at 250–800 Hz; automate smoothly under tempo changes.
+3. **Beat-synced echo/delay/freeze:** beat-division accuracy (1/4, 1/8, dotted, triplet); avoid feedback runaway; freeze/unfreeze clicklessness and tails no longer than permitted phrase.
+4. **Reverb and reverse reverb:** wet/dry crossover, impulse tail truncation, mono compatibility, protection against pre-echo leakage of cue-only content into the broadcast.
+5. **Tape stop / platter brake / spinback:** velocity curve and motorized-platter safety, transient handling, latency alignment and restart on downbeat; do not assume an S4 motor can be driven without a supported mapping.
+6. **Loop roll / beat-masher / stutter:** accurate loop index at changing BPM and sample rates; click-free crossfade at wraparound and no buffer underruns; bound repetition when tempo drift is high.
+7. **Riser and noise impact:** noise gate and true-peak limiter on layered sound; source must be original or licensed; high-frequency fatigue and loudness matching at drop.
+8. **Sidechain duck/crowd mic mix:** attack/release and limiter behavior; crowd cam (motion) is not a microphone; no hidden recording.
+
+For each FX require: 44.1/48/96kHz and stereo/mono, gain sweep, silence→signal→silence, 64/128/512 buffer, tempo ramp, rapid enable/disable, bypass parity, CPU and memory benchmark, peak + integrated loudness + true peak; A/B listening clips with randomized order. Set safe provisional criteria to be tuned in owner listening: 0 clipped samples, no hard discontinuity on toggles, tempo-aligned effect ends within ±1/64 beat; target peak ceiling -1 dBTP. These are **proposed** quality targets, not measured performance.
+
+## DATA research — A.7/A.12 ACE-Step 1.5 CPU vs affordable GPU
+
+Official source: https://github.com/ace-step/ACE-Step-1.5/blob/main/docs/en/INSTALL.md states CPU-only inference is supported but **significantly slower**; use inference-only DiT mode (`ACESTEP_INIT_LLM=false`) when resources are constrained. Official musician guide https://github.com/ace-step/ACE-Step-1.5/blob/main/docs/en/ace_step_musicians_guide.md gives **approximate** GPU durations for 2-minute songs: 4 GB GPU ~20–30 seconds; 8 GB GPU ~10–18 seconds; 12 GB GPU ~8–12 seconds; estimates depend on Turbo/quality settings. The 3-minute CPU-only duration on the owner's specific PC is **unknown**. We did **not** run a model or measure that duration; do not invent a three-minute CPU estimate or use GPU times as guarantees. Official benchmark script: https://github.com/ace-step/ACE-Step-1.5/blob/main/profile_inference.py and https://github.com/ace-step/ACE-Step-1.5/blob/main/docs/en/BENCHMARK.md.
+
+**Measurement protocol:** owner PC CPU model/RAM/OS, GPU and VRAM (if any), 180-second target, single 8-step Turbo 2B DiT-only pass and optional LM mode, cold/warm run ×3, samples/s, wall time, RAM peak, CPU utilization, output duration/audio size, failures/thermal throttling; compare against entry-level 4 GB and 8 GB GPU using same model/steps/seed if available. Run offline and avoid blocking live decks. Let owner choose optional separate AI-pack/cloud GPU only after measurements and cost/terms review. ACE-Step 1.5 repository declares MIT license (https://github.com/ace-step/ACE-Step-1.5); audit shipped model weights and dependencies independently before bundling.
+
+## DATA research — A.7 allin1 licensing status
+
+Project https://github.com/mir-aidj/all-in-one and LICENSE https://github.com/mir-aidj/all-in-one/blob/main/LICENSE show **MIT for source code** (copyright Taejun Kim), which generally permits commercial use and redistribution *with the license notice*. It uses pretrained Harmonix models; **code MIT does not by itself prove redistribution rights for each pretrained checkpoint, training-data obligations, Demucs/model dependency, or output usage**. Release gate: inspect model download hosting/model cards and weight license, test code/dependency SBOM, retain copyright notices and license in optional pack, and obtain legal review if rights are unclear. No pretrained model should be bundled by assumption. Candidate use: beat/downbeat/segment *metadata* only, not automatic broadcast of analyzed content.
