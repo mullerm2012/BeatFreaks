@@ -22,7 +22,7 @@ before you start. Stages follow the
 | --- | --- | --- | --- | --- |
 | 1.1 | Verify S4 MK3 mapping on Windows (incl. motorized platters, screens) | — | Blocked | Needs mullerm2012 to test on the Windows PC |
 | 1.2 | Verify F1 mapping; F1 sample-pad layer for sound effects | — | Open | |
-| 1.3 | BeatFreaks skin (edgy look: acid green / hot pink / cyan, Chakra Petch) | — | Open | Based on the "Brand" board in the screen designs |
+| 1.3 | BeatFreaks skin (edgy look: acid green / hot pink / cyan, Chakra Petch) | — | Open | Based on the "Brand" board. Pow Wow 1: record lanes are the signature; glow + stem waveforms only after Stage 1 hardware sign-off |
 | 1.4 | Downloads-folder watch (Beatport / Bandcamp purchases auto-import) | — | Open | |
 
 ## Stage 2 — Record + Arrange
@@ -38,7 +38,7 @@ before you start. Stages follow the
 | # | Task | Owner | State | Notes |
 | --- | --- | --- | --- | --- |
 | 3.1 | Export mix / stems / tracklist | — | Open | |
-| 3.2 | OBS WebSocket: now-playing text, scene switches, start/stop stream | — | Open | |
+| 3.2 | OBS WebSocket: now-playing text, scene switches, start/stop stream | DATA | In progress | Plan first (`collab/plans/obs-integration.md`); overlay never shows library or cued decks |
 | 3.3 | Stream overlay page for OBS (browser source) | — | Open | |
 | 3.4 | Elgato Stream Deck plugin (official SDK) | — | Open | Owner's model: ask mullerm2012 |
 | 3.5 | Auto-save and crash recovery | — | Open | |
