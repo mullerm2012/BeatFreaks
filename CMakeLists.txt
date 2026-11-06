@@ -5614,7 +5614,7 @@ set(
   CPACK_WIX_LICENSE_RTF
   "${CMAKE_CURRENT_BINARY_DIR}/packaging/wix/LICENSE.rtf"
 )
-set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/res/images/icons/ic_mixxx.ico")
+set(CPACK_WIX_PRODUCT_ICON "${CMAKE_SOURCE_DIR}/res/beatfreaks/art/exports/beatfreaks.ico")
 set(CPACK_WIX_PROPERTY_ARPHELPLINK "${CPACK_PACKAGE_HOMEPAGE_URL}")
 set(
   CPACK_WIX_UI_BANNER
