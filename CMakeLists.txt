@@ -1185,6 +1185,7 @@ add_library(
   EXCLUDE_FROM_ALL
   src/analyzer/analyzerbeats.cpp
   src/analyzer/analyzerebur128.cpp
+  src/analyzer/analyzerenergy.cpp
   src/analyzer/analyzergain.cpp
   src/analyzer/analyzerkey.cpp
   src/analyzer/analyzerscheduledtrack.cpp
@@ -1262,11 +1263,16 @@ add_library(
   src/controllers/scripting/legacy/scriptconnectionjsproxy.cpp
   src/controllers/softtakeover.cpp
   src/coreservices.cpp
+  src/beatfreaks/ai/acestepclient.cpp
+  src/beatfreaks/ai/songbrief.cpp
+  src/beatfreaks/ai/songinbox.cpp
   src/beatfreaks/automation/automationlane.cpp
   src/beatfreaks/automation/automationrecorder.cpp
   src/beatfreaks/diagnostics/bflog.cpp
   src/beatfreaks/diagnostics/diagnosticreport.cpp
   src/beatfreaks/diagnostics/hardwaretest.cpp
+  src/beatfreaks/library/energystore.cpp
+  src/beatfreaks/library/smartnext.cpp
   src/beatfreaks/library/tracklist.cpp
   src/beatfreaks/project/bfproject.cpp
   src/database/mixxxdb.cpp
@@ -2881,10 +2887,15 @@ if(BUILD_TESTING)
     src/test/analyzersilence_test.cpp
     src/test/audiotaperpot_test.cpp
     src/test/autodjprocessor_test.cpp
+    src/test/beatfreaks/acestepclient_test.cpp
     src/test/beatfreaks/automation_edgecase_test.cpp
     src/test/beatfreaks/automationlane_test.cpp
     src/test/beatfreaks/automationrecorder_test.cpp
     src/test/beatfreaks/bfproject_test.cpp
+    src/test/beatfreaks/energystore_test.cpp
+    src/test/beatfreaks/smartnext_test.cpp
+    src/test/beatfreaks/songbrief_test.cpp
+    src/test/beatfreaks/songinbox_test.cpp
     src/test/beatfreaks/tracklist_test.cpp
     src/test/beatgridtest.cpp
     src/test/beatmaptest.cpp
