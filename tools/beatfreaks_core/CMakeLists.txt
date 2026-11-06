@@ -26,6 +26,7 @@ add_library(beatfreaks_core STATIC
   ${MIXXX_SRC}/beatfreaks/ai/songbrief.cpp
   ${MIXXX_SRC}/beatfreaks/ai/acestepclient.cpp
   ${MIXXX_SRC}/beatfreaks/ai/songinbox.cpp
+  ${MIXXX_SRC}/beatfreaks/library/tracklist.cpp
 )
 target_include_directories(beatfreaks_core PUBLIC ${MIXXX_SRC})
 # Same as the real Mixxx build: string "a" + "b" makes a QStringBuilder, not a
@@ -48,6 +49,7 @@ add_executable(beatfreaks_core_tests
   ${MIXXX_SRC}/test/beatfreaks/songbrief_test.cpp
   ${MIXXX_SRC}/test/beatfreaks/acestepclient_test.cpp
   ${MIXXX_SRC}/test/beatfreaks/songinbox_test.cpp
+  ${MIXXX_SRC}/test/beatfreaks/tracklist_test.cpp
 )
 target_link_libraries(beatfreaks_core_tests PRIVATE beatfreaks_core GTest::gtest GTest::gtest_main)
 
