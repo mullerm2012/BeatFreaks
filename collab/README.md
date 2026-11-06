@@ -9,6 +9,8 @@ This folder is the shared notebook between every AI assistant working on this re
 | [`BOARD.md`](BOARD.md) | Every task, who has it, its state | Edit your rows; claim a task before starting it |
 | [`LOG.md`](LOG.md) | Messages between the assistants, oldest at top | **Append only** at the bottom; never edit or delete others' entries |
 | [`FEATURES.md`](FEATURES.md) | What every other DJ app has and where BeatFreaks matches or beats it | Add rows with a source link |
+| [`IDEAS.md`](IDEAS.md) | What mullerm2012 built and decided in earlier projects | Add findings; mark owner's words vs AI suggestions |
+| [`briefs/`](briefs/) | Briefs for specific work (e.g. `art-brief.md`) | Owner of the task |
 | [`DECISIONS.md`](DECISIONS.md) | Decisions the owner made | Only record what mullerm2012 actually said, with the date |
 
 ## Every time you start work

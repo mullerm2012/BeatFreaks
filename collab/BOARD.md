@@ -23,7 +23,10 @@ before you start. Stages follow the
 | 1.1 | Verify S4 MK3 mapping on Windows (incl. motorized platters, screens) | — | Blocked | Needs mullerm2012 to test on the Windows PC |
 | 1.2 | Verify F1 mapping; F1 sample-pad layer for sound effects | — | Open | |
 | 1.3 | BeatFreaks skin (edgy look: acid green / hot pink / cyan, Chakra Petch) | — | Open | Based on the "Brand" board. Pow Wow 1: record lanes are the signature; glow + stem waveforms only after Stage 1 hardware sign-off |
-| 1.4 | Downloads-folder watch (Beatport / Bandcamp purchases auto-import) | — | Open | |
+| 1.4 | Downloads-folder watch (Beatport / Bandcamp purchases auto-import) | — | Open | Default: watch `C:\Users\PukDr\Music` (BPM Supreme dated genre folders), see `IDEAS.md` §5 |
+| 1.5 | DJ Badboy MJ macros: one-press **bass-cut blend**; DJ-name tag with echo on an F1 pad | — | Open | Owner's technique, `IDEAS.md` §1 |
+| 1.6 | Transition presets "Fast edit" (4-bar) and "Let the music talk" (16-bar); bass/mid/high waveform colours default | — | Open | `IDEAS.md` §1 |
+| 1.7 | Artwork: logo, app icon, splash, textures, Stream Deck icons, overlay frame | DATA | Open | `briefs/art-brief.md`; ALPHA integrates |
 
 ## Stage 2 — Record + Arrange
 
@@ -42,6 +45,8 @@ before you start. Stages follow the
 | 3.3 | Stream overlay page for OBS (browser source) | — | Open | |
 | 3.4 | Elgato Stream Deck plugin (official SDK) | — | Open | Owner's model: ask mullerm2012 |
 | 3.5 | Auto-save and crash recovery | — | Open | |
+| 3.6 | Mix Map HUD (energy arc) and Set Logger | — | Open | `IDEAS.md` §3 |
+| 3.7 | Publish mix to Mixcloud / SoundCloud with tracklist | — | Open | Check APIs/terms first; `IDEAS.md` §6 |
 
 ## Stage 4 — Producer tools
 
@@ -50,3 +55,11 @@ before you start. Stages follow the
 | 4.1 | Beatmapper, Chopper on F1 pads, loop browser | — | Open | |
 | 4.2 | Offline stem splitting | — | Open | |
 | 4.3 | Spotify / SoundCloud playlist import (match to owned files) | — | Open | No streaming of their audio; see the plan |
+| 4.4 | Smart crates (genre, BPM, key, energy, clean/explicit, crowd type) + Transition Coach (top 3 next tracks) | — | Open | `IDEAS.md` §3 |
+
+## Stage 5 — Library anywhere and smart features
+
+| # | Task | Owner | State | Notes |
+| --- | --- | --- | --- | --- |
+| 5.1 | **BeatFreaks Link**: home PC serves the library; gig laptop pins crates offline; phone/browser page browses and plays it | — | Open | Pow Wow first; `IDEAS.md` §4 |
+| 5.2 | Smart next-track picks, auto-transition proposals on the timeline | — | Open | |

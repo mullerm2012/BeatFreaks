@@ -12,3 +12,5 @@ Only things the owner actually said. Newest at the bottom.
 | 2026-11-05 | Wants streaming-service support (SoundCloud, Beatport, Spotify, ...), recording, OBS streaming and Elgato Stream Deck support; graphics must look great. |
 | 2026-11-05 | Name: **BeatFreaks**. Look: edgy. |
 | 2026-11-05 | Code lives at github.com/mullerm2012/BeatFreaks. Claude Code and ChatGPT should coordinate in this repo. |
+| 2026-11-05 | Work ACN-style: Claude = ALPHA, ChatGPT = DATA, handoffs `ALPHA OVER` / `DATA OVER`, Pow Wows; ChatGPT makes the artwork. |
+| 2026-11-05 | Bring in ideas from earlier chats: beat matching, DJ-program work, and a website/app to connect to and play music stored on the PC. |
