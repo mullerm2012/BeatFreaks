@@ -7,9 +7,11 @@
 #   - the process is still running and has a visible main window,
 #   - the window is captured with PrintWindow (works without a desktop),
 #     and an image that is almost one colour is rejected as blank.
-#   - the build is labelled from the MSI product and the program itself:
-#     "beatfreaks" only when both say BeatFreaks, otherwise
-#     "pre-rebrand-mixxx" (test captures, never published as BeatFreaks UI).
+#   - the build is labelled from the MSI product AND the program's own
+#     ProductName: "beatfreaks" only when both start with BeatFreaks,
+#     "pre-rebrand-mixxx" when both say Mixxx (test captures, never
+#     published as BeatFreaks UI); anything mixed or unknown stops the job.
+#     The first step self-tests these rules.
 # Pictures that pass go to "screenshots-verified-<label>" with IDENTITY.txt.
 # Nothing goes into the manual until a person has looked at them.
 name: BeatFreaks screenshots
@@ -31,6 +33,41 @@ jobs:
     runs-on: windows-latest
     timeout-minutes: 30
     steps:
+      - name: Product check self-test
+        shell: pwsh
+        run: |
+          @'
+          # Decides which product a build is. Both the MSI and the program
+          # itself must agree; anything contradictory is refused.
+          function Get-BuildLabel([string]$MsiProduct, [string]$ExeProduct) {
+            $msiBF = $MsiProduct -match '^BeatFreaks'
+            $exeBF = $ExeProduct -match '^BeatFreaks'
+            $msiMx = $MsiProduct -match '^Mixxx'
+            $exeMx = $ExeProduct -match '^Mixxx'
+            if ($msiBF -and $exeBF) { return "beatfreaks" }
+            if ($msiMx -and $exeMx) { return "pre-rebrand-mixxx" }
+            throw "Inconsistent or unknown product: MSI '$MsiProduct', program '$ExeProduct'"
+          }
+          '@ | Set-Content "$env:RUNNER_TEMP\label.ps1"
+          . "$env:RUNNER_TEMP\label.ps1"
+          $cases = @(
+            @{ msi = "BeatFreaks"; exe = "BeatFreaks"; want = "beatfreaks" },
+            @{ msi = "Mixxx";      exe = "Mixxx";      want = "pre-rebrand-mixxx" },
+            @{ msi = "BeatFreaks"; exe = "Mixxx";      want = "error" },
+            @{ msi = "Mixxx";      exe = "BeatFreaks"; want = "error" },
+            @{ msi = "BeatFreaks"; exe = "";           want = "error" },
+            @{ msi = "";           exe = "BeatFreaks"; want = "error" },
+            @{ msi = "Something";  exe = "Else";       want = "error" }
+          )
+          $failed = 0
+          foreach ($c in $cases) {
+            try { $got = Get-BuildLabel $c.msi $c.exe } catch { $got = "error" }
+            $ok = $got -eq $c.want
+            if (-not $ok) { $failed++ }
+            Write-Host ("{0} MSI='{1}' program='{2}' -> {3} (want {4})" -f ($(if ($ok) {"PASS"} else {"FAIL"}), $c.msi, $c.exe, $got, $c.want))
+          }
+          if ($failed) { throw "$failed product-check case(s) failed" }
+
       - name: Find the installer build
         id: find
         shell: pwsh
@@ -81,15 +118,10 @@ jobs:
           $msiLine = Select-String -Path install.log -Pattern 'Product: (.+?) --' | Select-Object -Last 1
           $msiProduct = if ($msiLine) { $msiLine.Matches[0].Groups[1].Value } else { "" }
           Write-Host "MSI product='$msiProduct'  program=$($exe.FullName)  exe product='$($info.ProductName)' version='$($info.ProductVersion)'"
-          # Label the build honestly. Only a build where both the MSI and the
-          # program say BeatFreaks counts as BeatFreaks-branded.
-          if ($msiProduct -match 'BeatFreaks' -and ($info.ProductName -match 'BeatFreaks' -or $exe.Name -match '^beatfreaks')) {
-            $label = "beatfreaks"; $brand = "BeatFreaks"
-          } elseif ($msiProduct -match 'Mixxx' -or $info.ProductName -match 'Mixxx') {
-            $label = "pre-rebrand-mixxx"; $brand = "Mixxx"
-          } else {
-            throw "Cannot tell which product was installed (MSI '$msiProduct', exe '$($info.ProductName)')"
-          }
+          # Label the build honestly (rules and self-test in the first step).
+          . "$env:RUNNER_TEMP\label.ps1"
+          $label = Get-BuildLabel $msiProduct $info.ProductName
+          $brand = if ($label -eq "beatfreaks") { "BeatFreaks" } else { "Mixxx" }
           Write-Host "Build label: $label"
           New-Item -ItemType Directory -Force shots | Out-Null
           "msi_product=$msiProduct`nexe=$($exe.FullName)`nexe_product=$($info.ProductName)`nexe_version=$($info.ProductVersion)`nlabel=$label`ninstaller_run=${{ steps.find.outputs.run_id }}" | Set-Content shots\IDENTITY.txt
