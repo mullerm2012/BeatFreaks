@@ -15,7 +15,4 @@ Q_DECLARE_LOGGING_CATEGORY(bfHwS4)     // Traktor Kontrol S4 MK3
 Q_DECLARE_LOGGING_CATEGORY(bfHwF1)     // Traktor Kontrol F1
 Q_DECLARE_LOGGING_CATEGORY(bfTest)     // Hardware Test screen
 Q_DECLARE_LOGGING_CATEGORY(bfLibrary)  // library analysis, Smart Next
-<<<<<<< HEAD
 Q_DECLARE_LOGGING_CATEGORY(bfAi)       // AI songs (ACE-Step), Song Inbox
-=======
->>>>>>> origin/main
