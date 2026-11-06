@@ -163,3 +163,10 @@ Plan:
    accepted, swap step 1 for the official API.
 3. **Backup:** ACE-Step on a rented cloud GPU, or a documented
    music API with commercial terms. Owner decides on cost.
+4. **Suno inbox (owner, 00:37: "pull the song or the link"):** watch the
+   Downloads folder (and a chosen folder). Any new audio file is imported,
+   analysed (BPM/key/energy/sections) and queued in seconds. Pasting a
+   Suno song link stores it with the track and opens the page, but the
+   owner does the download. Automated downloads from Suno's servers would
+   break Suno's terms, so we don't do them. BeatFreaks also writes the
+   lyrics + style prompt (our own text) so the owner can paste it in.
