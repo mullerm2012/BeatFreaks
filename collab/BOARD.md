@@ -61,6 +61,7 @@ how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
 | C.2 | **Play from the cloud**: library can include the Drive folder; "Make available offline" button before a gig; warning if a queued song is cloud-only and the internet is down | ALPHA | Open | Gig safety first |
 | C.3 | Direct Google Drive API (upload without the desktop app, share link to a mix) | — | Later | Needs Google OAuth app verification |
 | C.4 | Streaming services: **Spotify (back in rekordbox/Serato/djay since Sept 2025)**, Apple Music, TIDAL, Beatport/Beatsource, SoundCloud. All are partner deals per DJ app; owner applies as BeatFreaks, ALPHA writes the pitch and builds | Owner + ALPHA | Later | Spotify DJ use is personal-use only; no unofficial scrapers |
+| C.6 | **Streaming plug-in slot**: one `StreamingProvider` interface (login, search, playlists, stream to deck, offline cache rules, per-service limits). Each approved service plugs in without touching the decks, Smart Next or Autopilot | ALPHA | Open | Owner 01:00: "leave it open to all of that" |
 | C.5 | Playlist bridge: read the owner's Spotify playlists (names only, Spotify Web API) and match them to songs owned locally; missing ones go on a "to buy" list | ALPHA | Open | Check Spotify developer terms first |
 
 ## Stage 0 — Foundation
