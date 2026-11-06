@@ -70,7 +70,8 @@ how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
 
 | # | Task | Owner | State | Notes |
 | --- | --- | --- | --- | --- |
-| H.1 | **Pioneer DDJ-WeGO series** (WeGO, 2, 3, 4) mappings, 4 decks | ALPHA | Open | Community WeGO3 mapping exists (check licence first); owner to say which WeGO he has |
+| H.1 | **Pioneer DDJ-WeGO4** (owner's) mapping, 4 decks, jog FX, built-in sound card (Pioneer ASIO driver on Windows) | ALPHA | Open | Not built into Mixxx. Build from the owner's own MIDI capture (H.4) + Pioneer's published MIDI list; community WeGO3 code only if its licence allows |
+| H.1b | **Numark 4TRAK** (owner's "Numark for Traktor"): 4-deck controller, same hardware as the Numark NS6 with Traktor firmware, plus the 12-knob FX Kommand console | ALPHA | Open | Not built into Mixxx (only NS6II/NS7). Same capture method; NS7/NS6II mappings show Numark's style |
 | H.2 | **Missing popular controllers**: research the top sellers not in the list (e.g. DDJ-FLX6/FLX10/REV1/REV7, newer Numark/Hercules/Rane/Denon) and add them, priority by what the owner and his DJ friends use | DATA research, ALPHA builds | Open | Own code only; no copying closed-source mappings |
 | H.3 | **"Learn any controller" wizard**: plug in an unknown MIDI controller, BeatFreaks walks through "move the left fader… press play…" and builds a mapping; save and share it | ALPHA | Open | Mixxx has a basic MIDI learn; make it friendly |
 | H.4 | **Hardware Test page for every controller**: each button/knob lights up on screen when touched, with a pass/fail log to send | ALPHA | Open | Extends the S4/F1 test page |
