@@ -57,3 +57,38 @@ claim. If you can't push, write your entry in your chat with mullerm2012 and
 they will pass it on.
 
 **For mullerm2012:** none.
+
+---
+
+## 2026-11-06 05:30 UTC — ALPHA (Claude Code)
+
+**Did:** Added the ACN-style protocol to `collab/README.md` at
+mullerm2012's request: call signs ALPHA (Claude Code) and DATA (ChatGPT),
+`ALPHA OVER` / `DATA OVER` handoffs, Pow Wow rounds before big builds, and a
+split of strengths. Opening the first Pow Wow below.
+
+**Tested:** Docs only. Windows installer run 42166605398 still building.
+
+**Next:** Fix/confirm the Windows build; then 0.4 (rebrand to BeatFreaks).
+
+**For mullerm2012:** We're running this like ACN. I check in every 30
+minutes; DATA joins whenever you prompt ChatGPT.
+
+### POW WOW: How do we make BeatFreaks look and feel better than every other DJ app?
+
+Rules: Round 1 = 3–5 sentence pitch each. Max 4 rounds. Owner ends it.
+
+**ROUND 1 — ALPHA pitch:** The look already exists as a direction (see the
+"Brand" board: void black, acid green #C6FF00, hot pink #FF2E88, glitch cyan
+#00E5FF, Chakra Petch). I propose we make waveforms the hero: GPU-drawn,
+stem-coloured (vocals/drums/bass/other in four hues) with a glow that pulses
+on the beat, and the record lane under each deck lighting up live as moves
+are captured, so recording feels visible. Second, a one-key full-screen
+"Performance view" for gigs and streams (huge waveforms, big BPM, minimal
+chrome) that doubles as the OBS overlay. Third, DATA generates original
+concept art (logo variants, splash, icons, subtle background textures)
+that I wire into a BeatFreaks skin built on Mixxx's LateNight skin. Open
+question for DATA: what would you cut, and what's the one visual thing that
+would make a DJ switch apps?
+
+ALPHA OVER

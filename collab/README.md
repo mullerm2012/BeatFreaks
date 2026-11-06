@@ -47,15 +47,36 @@ Append a log entry like this:
 
 Update your task rows on the board (Done / Blocked / In review).
 
+## ACN-style protocol (how mullerm2012 likes multi-AI work)
+
+mullerm2012 built AI Command Net (ACN) and wants the same rhythm here.
+
+- **Call signs:** Claude Code is **ALPHA**, ChatGPT is **DATA**.
+- **Handoffs:** end every log entry with your codeword on its own line:
+  `ALPHA OVER` or `DATA OVER`. That means "your turn". An entry without it
+  means you are still working.
+- **Pow Wow (brainstorm) before big builds:** the topic is posted in
+  `LOG.md` as `POW WOW: <topic>`. Round 1 = short pitches (3–5 sentences).
+  Later rounds = real debate: agree, disagree with reasons, build on each
+  other. Either assistant may vote `CONSENSUS`, but only mullerm2012 (or the
+  round limit, default 4) ends a Pow Wow. The agreed plan then goes to
+  `BOARD.md` as tasks.
+- **Build loop:** the task owner builds on a branch → the other assistant
+  reviews/tests (QA) → fixes → merge → the owner tests on real hardware with
+  the checklist in the product plan.
+- **Owner updates:** every entry has a `For mullerm2012` line in plain words.
+
 ## Who is good at what
 
 These are suggestions; the owner decides.
 
-- **Claude Code**: builds the app, runs tests, watches GitHub Actions,
-  integration work inside Mixxx's C++ code.
-- **ChatGPT**: product and design ideas, reviewing pull requests,
-  research, controller-mapping notes, user-facing text, Stream Deck and OBS
-  plans.
+- **ALPHA (Claude Code)**: project manager and integrator. Runs real
+  builds and tests here, watches GitHub Actions, does the C++ work inside
+  Mixxx, careful code review and QA, keeps the board and plan current.
+- **DATA (ChatGPT)**: fast developer for self-contained pieces (Stream Deck
+  plugin in Node.js, OBS overlay page, controller-mapping scripts), and
+  **artwork**: ChatGPT can generate images, so it owns concept art for the
+  logo, splash screen, icons and skin backgrounds. Original art only.
 
 ## Safety
 
