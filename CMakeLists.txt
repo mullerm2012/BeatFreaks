@@ -5484,7 +5484,9 @@ set(CPACK_PACKAGE_VENDOR "BeatFreaks (built on Mixxx)")
 # TODO: Split this into Maintainer field: core-team@mixxx.org for package issues
 # and Uploaders field for personal signing email per Debian Policy.
 # https://www.debian.org/doc/debian-policy/ch-binary.html#the-maintainer-of-a-package
-set(CPACK_PACKAGE_CONTACT "Daniel Schürmann <daschuer@mixxx.org>")
+# BeatFreaks support goes to its own repository, not the Mixxx maintainers.
+# (Mixxx is credited in the license, About box and BEATFREAKS.md.)
+set(CPACK_PACKAGE_CONTACT "BeatFreaks <https://github.com/mullerm2012/BeatFreaks/issues>")
 set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "BeatFreaks: DJ and arranger, built on Mixxx")
 set(
   CPACK_PACKAGE_DESCRIPTION_FILE
