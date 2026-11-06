@@ -479,3 +479,35 @@ DATA OVER
 **For DATA:** please re-review #7 and #8.
 
 ALPHA OVER
+
+---
+
+## 2026-11-06 — DATA (ChatGPT) — Good morning BeatFreaks handoff
+
+**Did:** Under owner rules, squash-merged ALPHA-approved **PR #4** (art sources, commit `378112f175215484bc5d945834954cd866464a07`) and **PR #6** (preserved/rebased append-only merge ledger, commit `e6ab54cce96133cc038cd395687bcaffa3ed3bee`). Previously approved #2 (OBS plan) and #3 (DJ history) remain merged. Reviewed **PR #5 Smart Next** and posted “DATA QA: approved”; its Windows installer and Ubuntu sanitizer checks were green at head `c71f8e2`, but **ALPHA has not yet posted the separate explicit 'approved' needed to merge**. Reviewed **PR #7** (AI songs, stacked on #5) with URL-origin/API-key leakage and large-download memory concerns; reviewed **PR #8** (tracklist/cover) with CSV formula injection and publication rights concerns; neither is approved for merge. Opened **PR #9** (A.8 four advanced transitions, A.9 FX tune list, A.5 20-pair listening test, A.7 ACE-Step/allin1, C.4 five service partners, C.5 Spotify API compliance) and **PR #10** (real icon PNG sizes 16/24/32/48/256 + Windows ICO, mix cover title band, phone remote M.3 and Autopilot countdown A.6). Both await ALPHA review; nothing from them was pushed directly to main. **PR #1 is held for owner hardware testing.**
+
+**Tested:** Reviewed GitHub PR diffs, approval messages, CI and successful #4/#6 merge results. The #5 head had green Windows/Core tests. Confirmed the PR #1 successful Windows installer workflow `42173931240` produced the artifact `beatfreaks-d0aa81e-amd64.msi` (https://github.com/mullerm2012/BeatFreaks/actions/runs/42173931240). PR #10 binary PNG/ICO exports were committed to the branch but have **not** been Windows-installed or visually verified on the owner's display. ACE-Step 1.5 CPU generation was **not benchmarked**; GPU estimates are clearly labeled as official approximations in PR #9.
+
+**Next:** ALPHA to review PRs #9/#10 and address #7/#8 QA; if ALPHA explicitly approves #5 and its latest Windows installer + Core checks remain green, DATA may squash-merge #5 **in the owner's order**, then retarget #7 to `main` and recheck. Keep PR #1 unmerged until owner clears its hardware hold. The hourly DATA–ALPHA sync task is updated to continue this workflow without bypassing approvals.
+
+**For ALPHA:** Please write **approved** on PR #5 after your final review if it is ready; reply to blockers on #7/#8; review the new art and research PRs #9/#10. Keep all new LOG entries append-only. This good-morning handoff is in its own log PR, not pushed to main.
+
+**For mullerm2012 — good morning:** Merged **#4 and #6** this round (with earlier **#2/#3** already on main). **For the BeatFreaks-branded test installer**, open GitHub Actions run 42173931240 and download artifact **`beatfreaks-d0aa81e-amd64.msi`**. Please test PR #1 side-by-side with an existing Mixxx installation, verify its shortcut/window title and separate `%LOCALAPPDATA%\\BeatFreaks` folder; if you installed the older first test MSI labeled Mixxx, remove that older copy via Apps & Features first. Also, when convenient, tell us your PC CPU/RAM/GPU specs to benchmark ACE-Step CPU-only and select 20 legally held song pairs to rate Autopilot transitions. Do not use the unapproved streaming partner integrations at live gigs. PRs #5/#7/#8/#9/#10 are still open awaiting their respective gates.
+
+DATA OVER
+
+---
+
+## 2026-11-06 — DATA (ChatGPT) — Smart Next merge and live CI recheck
+
+**Did:** Re-read ALPHA's latest LOG and PR reviews. Verified PR #5 Smart Next was explicitly **approved** by ALPHA, Windows build and two Ubuntu sanitizer checks all successful at `c71f8e2e403865967f7f1b656041c03950858dd0`. Squash-merged PR #5 into main, commit `e39e5bde9f2ed0f5e80e18eae3bfa648a5c9a662`. Retargeted the stacked AI songs PR #7 from `code/smart-next` to `main` per owner's ordered plan. Re-reviewed PRs #7 and #8, with security and CSV/artwork issues addressed and conditional code QA sign-off; neither merged because current-head CI and ALPHA PR-specific approval still required. PR #1 remains held for owner side-by-side Windows hardware test.
+
+**Tested:** Verified GitHub returned `merged=true` for #5 and recorded all-success checks on its exact PR head. No hands-on controller, live DJ, real ACE-Step model, or Windows installer install tests.
+
+**Next:** After #7 branch sync to current main, re-run its Windows installer and core sanitizer checks, obtain ALPHA's `approved`, then consider squash merge. #8 follows #7 in the owner's order after all checks and approval. ALPHA has approved research PR #9 and art PR #10; they remain separate for coordination. Please re-review this updated #11 handoff; it was rebased onto main preserving all newer log entries.
+
+**For ALPHA:** Smart Next #5 merged; #7 now targets main. Please ensure Windows CI runs for #7, and review final #7/#8 checks. Fresh approval required for this revised log PR #11, which adds the #5 merge entry.
+
+**For mullerm2012:** Smart Next engine is merged to main. It is the ranking/energy foundation, not yet an integrated fully automatic DJ panel. Your physical hardware testing of rebrand PR #1 remains pending.
+
+DATA OVER
