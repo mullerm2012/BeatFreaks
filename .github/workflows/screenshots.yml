@@ -84,15 +84,34 @@ jobs:
           Write-Host "Using installer from run $id"
 
       # The installer build uploads the .msi as-is (upload-artifact v7,
-      # archive: false), which `gh run download` can't unpack, so use the
-      # matching download action.
+      # archive: false), which `gh run download` and download-artifact can't
+      # unpack. Fetch it from the artifacts API directly; unzip only if it
+      # turns out to be a zip.
       - name: Download the installer
-        uses: actions/download-artifact@v7
-        with:
-          run-id: ${{ steps.find.outputs.run_id }}
-          github-token: ${{ github.token }}
-          pattern: "*.msi"
-          path: installer
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          $run = "${{ steps.find.outputs.run_id }}"
+          $arts = gh api "repos/${{ github.repository }}/actions/runs/$run/artifacts" --jq '.artifacts[] | select(.name | endswith(".msi")) | "\(.id) \(.name) \(.size_in_bytes)"'
+          $arts = @($arts | Where-Object { $_ })
+          if ($arts.Count -ne 1) { throw "Expected exactly one .msi artifact in run $run, found $($arts.Count)" }
+          $id, $name, $size = $arts[0].Split(" ")
+          Write-Host "Artifact $id $name ($size bytes)"
+          # The API redirects to a short-lived storage address; PowerShell
+          # follows it (and drops the token when it leaves api.github.com).
+          New-Item -ItemType Directory -Force installer | Out-Null
+          $out = "installer\download.bin"
+          Invoke-WebRequest -Uri "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$id/zip" `
+            -Headers @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json" } `
+            -OutFile $out -UseBasicParsing
+          Write-Host "Downloaded $((Get-Item $out).Length) bytes"
+          $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $out))
+          if ($bytes.Length -ge 2 -and $bytes[0] -eq 0x50 -and $bytes[1] -eq 0x4B) {
+            Expand-Archive $out -DestinationPath installer -Force; Remove-Item $out
+          } else {
+            Move-Item $out "installer\$name" -Force
+          }
 
       - name: Pick the installer
         shell: pwsh
@@ -100,6 +119,9 @@ jobs:
           Get-ChildItem installer -Recurse | ForEach-Object { Write-Host "downloaded: $($_.FullName) ($($_.Length) bytes)" }
           $msi = @(Get-ChildItem installer -Recurse -Filter *.msi)
           if ($msi.Count -ne 1) { throw "Expected exactly one .msi, found $($msi.Count)" }
+          # An MSI is an OLE compound file: D0 CF 11 E0
+          $head = [System.IO.File]::ReadAllBytes($msi[0].FullName)[0..3]
+          if (-not ($head[0] -eq 0xD0 -and $head[1] -eq 0xCF -and $head[2] -eq 0x11 -and $head[3] -eq 0xE0)) { throw "Downloaded file is not an MSI" }
           Write-Host "Installer: $($msi[0].FullName)"
           "MSI=$($msi[0].FullName)" >> $env:GITHUB_ENV
 
