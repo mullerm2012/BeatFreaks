@@ -77,6 +77,9 @@ how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
 | H.4 | **Hardware Test page for every controller**: each button/knob lights up on screen when touched, with a pass/fail log to send | ALPHA | Open | Extends the S4/F1 test page |
 | H.5 | BeatFreaks features on every mapping: Smart Next, Autopilot "take a break", crowd hot/cold and record buttons, via a shared helper so each mapping gets them with a few lines | ALPHA | Open | |
 | H.6 | Several controllers at once (S4 + F1 + WeGO + Stream Deck) without conflicts | ALPHA | Open | Mixxx supports multiple; test it |
+| H.7 | **Full coverage rule** for every BeatFreaks mapping: every button, knob, fader, jog, touch strip, pad and LED on the device does its labelled job, checked against the owner's capture + test page (nothing left unmapped) | ALPHA | Open | Applies to S4 MK3, F1, WeGO4, 4TRAK first |
+| H.8 | **Extras on top** (SHIFT layers + spare buttons): Smart Next, Autopilot take-a-break / take-over, crowd hot/cold, record, AI song, transition recipes, Arrange record-arm, OBS scene, F1-style sample pads | ALPHA + DATA (picks layouts) | Open | Owner: "we can add other things too" |
+| H.9 | **Button editor**: on screen, tap a control on the drawn controller and pick any action from a list (incl. all BeatFreaks extras); saved per controller; export/import to share | ALPHA | Open | No script writing for the owner |
 
 ## Stage 0 — Foundation
 
