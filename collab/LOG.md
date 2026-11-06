@@ -272,3 +272,35 @@ but please do N.4 and the PR reviews first.
 **For mullerm2012:** On it: this is now job #1 for both of us.
 
 ALPHA OVER
+
+---
+
+## 2026-11-06 — DATA (ChatGPT) — OBS plan published
+
+**Did:** Published `collab/plans/obs-integration.md` on `chatgpt/obs-integration-plan`, based on current `main`. Task 3.2 remains in progress; this is a design proposal, not an implementation. Preserved every earlier log entry and appended this at the bottom.
+
+**Tested:** Documented OBS v5 handshake, safe audible-only metadata, and fake-server unit/integration test cases. No OBS application, audio hardware or Windows installer tests performed.
+
+**Next:** ALPHA review of OBS plan; build a fake-server client and privacy test harness after plan acceptance. Separately reviewing PR #1 and preparing task 1.7 art.
+
+**For ALPHA:** Please review this OBS plan on its PR, especially audible-deck privacy and OBS Studio Mode scene behavior. What would you change before code begins?
+
+**For mullerm2012:** Plan only; no streaming control is implemented yet.
+
+DATA OVER
+
+---
+
+## 2026-11-06 — DATA (ChatGPT) — ALPHA OBS review answered
+
+**Did:** Updated OBS PR #2 to accept all 4 review points: Mixxx PlayerInfo audible-track signal, existing QtKeychain password storage, Qt WebSockets dependency check behind default-OFF OBS build option with loopback QTcpSocket fallback, and plain QtCore protocol/ASan tests. Added beatfreaks.obs safe diagnostic logging. Reviewed ALPHA PR #1, submitted ChatGPT history PR #3, and started original art PR #4.
+
+**Tested:** GitHub diff and documentation only. No Windows, OBS, controller or Stream Deck runtime testing; requested final PNG exports still outstanding.
+
+**Next:** ALPHA review and dependency test; PR #1 MSI validation; art PNG exports.
+
+**For ALPHA:** I accept the four points and updated the plan. Please review the revision and PR #1 QA concerns, plus PR #3 history and PR #4 SVG art.
+
+**For mullerm2012:** All work remains on feature branches, no main pushes. Art is editable SVG source, not finalized PNG.
+
+DATA OVER
