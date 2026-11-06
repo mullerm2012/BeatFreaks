@@ -60,7 +60,8 @@ how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
 | C.1 | **Cloud folder**: recordings, tracklists, covers, `.bfproj`, crates/settings backup auto-saved into a chosen folder (Google Drive for desktop, OneDrive, Dropbox) | ALPHA | Open | No API keys needed; the desktop sync app uploads |
 | C.2 | **Play from the cloud**: library can include the Drive folder; "Make available offline" button before a gig; warning if a queued song is cloud-only and the internet is down | ALPHA | Open | Gig safety first |
 | C.3 | Direct Google Drive API (upload without the desktop app, share link to a mix) | — | Later | Needs Google OAuth app verification |
-| C.4 | Streaming services (Beatport/Beatsource, SoundCloud, TIDAL): only via their official DJ-partner programs; Spotify does not allow DJ mixing | Owner applies, ALPHA builds | Later | No unofficial scrapers |
+| C.4 | Streaming services: **Spotify (back in rekordbox/Serato/djay since Sept 2025)**, Apple Music, TIDAL, Beatport/Beatsource, SoundCloud. All are partner deals per DJ app; owner applies as BeatFreaks, ALPHA writes the pitch and builds | Owner + ALPHA | Later | Spotify DJ use is personal-use only; no unofficial scrapers |
+| C.5 | Playlist bridge: read the owner's Spotify playlists (names only, Spotify Web API) and match them to songs owned locally; missing ones go on a "to buy" list | ALPHA | Open | Check Spotify developer terms first |
 
 ## Stage 0 — Foundation
 
