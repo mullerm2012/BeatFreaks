@@ -572,3 +572,19 @@ TEST_F(AceStepClientTest, DownloadsOneVersionAtATime) {
     }
     EXPECT_EQ(server.hits("/v1/audio"), 4);
 }
+
+TEST_F(AceStepClientTest, RefusesHugeStatusReplies) {
+    FakeAceStep server;
+    server.on("POST", "/release_task", [](const QByteArray&) { return Response{200, released("t8")}; });
+    server.on("POST", "/query_result", [](const QByteArray&) {
+        return Response{200, QByteArray(3 * 1024 * 1024, ' ')};
+    });
+    AceStepSettings s = fastSettings(server.url(), m_dir.path());
+    s.maxRetries = 1;
+    AceStepClient client(s);
+    Outcome o;
+    watch(client, o);
+    client.generate(brief());
+    ASSERT_TRUE(waitFor([&] { return o.failed || o.finished; }));
+    EXPECT_TRUE(o.failed);
+}

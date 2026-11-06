@@ -23,6 +23,9 @@ namespace beatfreaks::ai {
 
 namespace {
 
+// status answers are small JSON; never buffer a runaway reply in memory
+constexpr qint64 kMaxJsonBytes = 2 * 1024 * 1024;
+
 QJsonValue unwrapData(const QByteArray& body) {
     const QJsonDocument doc = QJsonDocument::fromJson(body);
     if (!doc.isObject()) {
@@ -282,6 +285,11 @@ QNetworkReply* AceStepClient::post(const QString& jobId, const QString& path, co
     QNetworkRequest req = request(m_settings.baseUrl.resolved(QUrl(path)));
     req.setHeader(QNetworkRequest::ContentTypeHeader, QStringLiteral("application/json"));
     QNetworkReply* reply = m_network->post(req, QJsonDocument(body).toJson(QJsonDocument::Compact));
+    connect(reply, &QNetworkReply::downloadProgress, reply, [reply](qint64 received, qint64) {
+        if (received > kMaxJsonBytes) {
+            reply->abort();
+        }
+    });
     trackReply(jobId, reply);
     return reply;
 }
@@ -334,7 +342,7 @@ void AceStepClient::submit(const QString& jobId) {
             return;
         }
         const int http = reply->attribute(QNetworkRequest::HttpStatusCodeAttribute).toInt();
-        const QByteArray body = reply->readAll();
+        const QByteArray body = reply->bytesAvailable() > kMaxJsonBytes ? QByteArray() : reply->readAll();
         if (http == 401) {
             fail(jobId, QStringLiteral("The AI song server wants an API key (Settings › AI songs)"));
             return;
@@ -385,9 +393,18 @@ void AceStepClient::poll(const QString& jobId) {
                     QStringLiteral("Lost the AI song server: ") + reply->errorString());
             return;
         }
+        if (reply->bytesAvailable() > kMaxJsonBytes) {
+            retryOrFail(jobId, &AceStepClient::poll, QStringLiteral("AI song server sent a reply that is too large"));
+            return;
+        }
+        const QByteArray body = reply->readAll();
+        if (!QJsonDocument::fromJson(body).isObject()) {
+            retryOrFail(jobId, &AceStepClient::poll, QStringLiteral("AI song server sent an unreadable reply"));
+            return;
+        }
         Job& job = m_jobs[jobId];
         job.retries = 0;
-        const QList<AceStepTask> tasks = parseQuery(reply->readAll());
+        const QList<AceStepTask> tasks = parseQuery(body);
         const auto t = std::find_if(tasks.begin(), tasks.end(),
                 [&](const AceStepTask& x) { return x.taskId == job.taskId; });
         if (t == tasks.end() || t->status == 0) {
