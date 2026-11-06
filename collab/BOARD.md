@@ -81,6 +81,19 @@ how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
 | H.8 | **Extras on top** (SHIFT layers + spare buttons): Smart Next, Autopilot take-a-break / take-over, crowd hot/cold, record, AI song, transition recipes, Arrange record-arm, OBS scene, F1-style sample pads | ALPHA + DATA (picks layouts) | Open | Owner: "we can add other things too" |
 | H.9 | **Button editor**: on screen, tap a control on the drawn controller and pick any action from a list (incl. all BeatFreaks extras); saved per controller; export/import to share | ALPHA | Open | No script writing for the owner |
 
+## Business — website and selling (owner, 2026-11-06 04:34)
+
+Plan: `plans/selling-beatfreaks.md`. One-time price, no subscription.
+
+| # | Task | Owner | State | Notes |
+| --- | --- | --- | --- | --- |
+| B.1 | Website (`website/`), honest feature status, pricing, download, FAQ, GPL + Mixxx credit | ALPHA (build) + DATA (art, screenshots) | Draft | Preview https://claude.ai/artifact/FTCTRXdkqSuHH6h2BPAmHx |
+| B.2 | Store: merchant of record (Lemon Squeezy proposed), licence keys, 2-download limit, tester discount codes | Owner signs up, ALPHA wires | Open | Owner action |
+| B.3 | BeatFreaks account + device limit (3) for online services only (never gates the GPL app) | ALPHA | Open | |
+| B.4 | Install-and-launch smoke test on the Windows CI runner | ALPHA | Open | "sandbox to test it all" |
+| B.5 | Terms, refund (14 days proposed), privacy policy, GPL source offer per release | Owner + lawyer, DATA drafts | Open | |
+| B.6 | Trademark "BeatFreaks", domain, code signing (Azure, $9.99/mo) | Owner | Open | |
+
 ## Engine 2 — own engine, piece by piece (owner, 2026-11-06 04:45)
 
 Goal: one day BeatFreaks needs no Mixxx code, so the owner can choose its licence. Until the last Mixxx piece is gone, the whole app stays GPL. Releases already made stay GPL forever.
