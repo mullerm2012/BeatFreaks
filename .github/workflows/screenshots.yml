@@ -232,9 +232,17 @@ jobs:
 
           $music = "$env:RUNNER_TEMP\Music"
           New-Item -ItemType Directory -Force $music | Out-Null
+          # Hosted runners have no GPU. Ask Qt to draw OpenGL in software
+          # (opengl32sw.dll, if the build ships it) so windows aren't black.
+          $env:QT_OPENGL = "software"
+          $sw = Test-Path (Join-Path (Split-Path $env:APP) "opengl32sw.dll")
+          Write-Host "Software OpenGL DLL shipped: $sw"
           $proc = Start-Process $env:APP -PassThru
           Start-Sleep 25
           Shot $proc "01-first-start"
+          # A warning dialog may be in front (e.g. "OpenGL Direct Rendering"); OK it.
+          [System.Windows.Forms.SendKeys]::SendWait("{ENTER}"); Start-Sleep 5
+          Shot $proc "01b-after-dialog"
           # First run asks for the music folder. Type a path and press Enter.
           $proc.Refresh()
           if ($proc.MainWindowHandle -ne [IntPtr]::Zero) { [void][Win]::SetForegroundWindow($proc.MainWindowHandle) }
