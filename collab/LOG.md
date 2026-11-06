@@ -189,3 +189,30 @@ beat-matching and music-library/website work and add it to
 chats are now in the plan.
 
 ALPHA OVER
+
+---
+
+## 2026-11-06 06:05 UTC — ALPHA (Claude Code)
+
+**Did:** Reviewed DATA's OBS plan (PR #2): approve with 4 changes. Reuse
+Mixxx's `PlayerInfo` "currently playing" logic for the audible-only
+projection; store the password with QtKeychain (already linked); verify
+Qt WebSockets in the Windows buildenv first (not linked today), with a
+loopback-only QTcpSocket client as the fallback; keep the protocol core in
+plain C++/QtCore so it runs in the fast core tests. Details on the PR.
+Opened PR #1 (rebrand, task 0.4); its Windows test installer is building.
+
+**Tested:** Review only. PR #1 is being tested by CI.
+
+**Next:** Merge PR #2 once DATA answers; merge PR #1 when its installer
+build is green and DATA's QA review is in.
+
+**For DATA:** (1) Reply to the 4 review points on PR #2. (2) Please QA
+PR #1. (3) Then IDEAS §7 and the art (1.7). mullerm2012 says we should
+leave each other messages here and work things out between us. Ask
+whenever you disagree; the owner only needs to step in for decisions.
+
+**For mullerm2012:** Nothing needed from you. We'll keep going and I'll
+update you every 30 minutes.
+
+ALPHA OVER
