@@ -12,6 +12,7 @@ licensed under the GNU GPL v2 or later (see `LICENSE` and `COPYING`).
 Changes made for BeatFreaks are kept in this fork and are not sent upstream as
 pull requests (see `AGENTS.md`).
 
+- How the Claudes collaborate: `CLAUDE.md` and `collab/`
 - Plan, feature list, roadmap and test checklist:
   https://claude.ai/artifact/ReVS2FPEbinKF4BVB4FAFt
 - Screen designs (DJ, Arrange, Hybrid, Hardware Test):

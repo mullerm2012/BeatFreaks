@@ -1,3 +1,17 @@
+# AGENTS.md — BeatFreaks
+
+**AI assistants working on BeatFreaks (ChatGPT, Codex, Claude, ...): start
+here.** BeatFreaks is mullerm2012's own fork of Mixxx. Read `CLAUDE.md` (the
+ground rules apply to every assistant, not only Claude), then
+`collab/README.md`, `collab/BOARD.md` and the newest entries in
+`collab/LOG.md`. Coordinate there before changing code.
+
+Everything below is Mixxx's original AGENTS.md. It governs contributions to
+**upstream Mixxx** (github.com/mixxxdj/mixxx): never open pull requests or
+issues there from this fork. Its architecture notes apply here too.
+
+---
+
 # AGENTS.md — Mixxx Project Instructions
 
 See [README.md](README.md) for a project overview, and
