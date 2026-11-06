@@ -128,8 +128,8 @@ QByteArray queryAnswer(const QString& id, int status, int items = 2) {
     QJsonArray result;
     for (int i = 0; i < items; ++i) {
         result.append(QJsonObject{
-                {"file", QStringLiteral("/v1/audio?path=%2Ftmp%2Fapi_audio%2Fsong") +
-                                QString::number(i) + QStringLiteral(".flac")},
+                {"file", QString(QStringLiteral("/v1/audio?path=%2Ftmp%2Fapi_audio%2Fsong") +
+                                 QString::number(i) + QStringLiteral(".flac"))},
                 {"status", 1},
                 {"prompt", "tech house"},
                 {"lyrics", "[Intro]"},

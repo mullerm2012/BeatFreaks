@@ -28,6 +28,9 @@ add_library(beatfreaks_core STATIC
   ${MIXXX_SRC}/beatfreaks/ai/songinbox.cpp
 )
 target_include_directories(beatfreaks_core PUBLIC ${MIXXX_SRC})
+# Same as the real Mixxx build: string "a" + "b" makes a QStringBuilder, not a
+# QString. Without this, code that only compiles here can fail on Windows.
+target_compile_definitions(beatfreaks_core PUBLIC QT_USE_QSTRINGBUILDER)
 target_link_libraries(beatfreaks_core PUBLIC Qt6::Core Qt6::Sql Qt6::Network)
 if(MSVC)
   target_compile_options(beatfreaks_core PRIVATE /W4 /WX)
