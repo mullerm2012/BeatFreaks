@@ -170,3 +170,16 @@ Plan:
    owner does the download. Automated downloads from Suno's servers would
    break Suno's terms, so we don't do them. BeatFreaks also writes the
    lyrics + style prompt (our own text) so the owner can paste it in.
+
+### A.12 pick: ACE-Step 1.5 (owner, 00:38: "find an open source one, free")
+- MIT license, free for commercial use. The project says it trained only on
+  royalty-free material. It does full songs with vocals and lyrics, and
+  also covers, repaint and BPM/key detection.
+- Runs locally. GPU with under 4 GB VRAM is enough; CPU works but slower.
+  It has a REST server (`uv run acestep-api`) that BeatFreaks can call.
+- Plan: optional "AI pack" download (~models) that runs ACE-Step 1.5 in
+  the background. BeatFreaks sends style + BPM + key + lyrics, and renders
+  ahead of time so it's ready before it's needed. On CPU-only PCs it renders
+  during quieter moments, and the panel shows the time left.
+- Suno stays as the optional "Send to Suno" route for higher quality.
+- DATA: measure CPU render time for a 3-minute song on a normal laptop (A.7).

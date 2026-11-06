@@ -35,7 +35,7 @@ how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
 | A.9 | **FX quality**: click/level/tail/tempo-lock tests in CI for every effect, latency+CPU benchmark, add missing FX (tape stop, riser, beat-masher) | ALPHA (tests) + DATA (sound) | Open | "work better than the other programs" |
 | A.10 | **From here to here**: mark a spot in A and a spot in B, Autopilot plans the phrase-correct transition between them | ALPHA | Open | Also drag in Arrange |
 | A.11 | **Crowd cam**: webcam motion energy + on-beat motion → floor heat → Smart Next crowd score | ALPHA | Open | Motion only, no faces, nothing saved, off by default |
-| A.12 | **AI songs for the floor**: "Send to Suno" prompt builder + auto-import of downloaded songs; official Suno API if accepted to its partner program | DATA + ALPHA | Open | Owner has no GPU; no unofficial Suno wrappers |
+| A.12 | **AI songs for the floor**: ACE-Step 1.5 (MIT, free, runs locally) built in; plus "Send to Suno" prompt builder + auto-import of downloaded songs; official Suno API if accepted to its partner program | DATA + ALPHA | Open | Owner has no GPU; no unofficial Suno wrappers |
 | A.7 | Optional AI pack: allin1 sections/downbeats (license, CPU/GPU) | DATA | Open | Research |
 
 ## Stage 0 — Foundation
