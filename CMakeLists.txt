@@ -2063,7 +2063,7 @@ target_include_directories(
 )
 if(UNIX AND NOT APPLE)
   target_sources(mixxx-lib PRIVATE src/util/rlimit.cpp)
-  set(MIXXX_SETTINGS_PATH ".mixxx/")
+  set(MIXXX_SETTINGS_PATH ".beatfreaks/")
 endif()
 
 if(APPLE)
@@ -5479,21 +5479,21 @@ configure_file(
 )
 
 # Packaging
-set(CPACK_PACKAGE_NAME "Mixxx")
-set(CPACK_PACKAGE_VENDOR "Mixxx Project")
+set(CPACK_PACKAGE_NAME "BeatFreaks")
+set(CPACK_PACKAGE_VENDOR "BeatFreaks (built on Mixxx)")
 # TODO: Split this into Maintainer field: core-team@mixxx.org for package issues
 # and Uploaders field for personal signing email per Debian Policy.
 # https://www.debian.org/doc/debian-policy/ch-binary.html#the-maintainer-of-a-package
 set(CPACK_PACKAGE_CONTACT "Daniel Schürmann <daschuer@mixxx.org>")
-set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Digital DJ Application")
+set(CPACK_PACKAGE_DESCRIPTION_SUMMARY "BeatFreaks: DJ and arranger, built on Mixxx")
 set(
   CPACK_PACKAGE_DESCRIPTION_FILE
   "${CMAKE_CURRENT_SOURCE_DIR}/packaging/CPackPackageDescription.txt"
 )
-set(CPACK_PACKAGE_INSTALL_DIRECTORY "Mixxx")
-set(CPACK_PACKAGE_EXECUTABLES "mixxx;Mixxx")
+set(CPACK_PACKAGE_INSTALL_DIRECTORY "BeatFreaks")
+set(CPACK_PACKAGE_EXECUTABLES "mixxx;BeatFreaks")
 set(CPACK_PACKAGE_ICON "${CMAKE_SOURCE_DIR}/res/images/mixxx_install_logo.bmp")
-set(CPACK_PACKAGE_HOMEPAGE_URL "https://www.mixxx.org/")
+set(CPACK_PACKAGE_HOMEPAGE_URL "https://github.com/mullerm2012/BeatFreaks")
 set(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE")
 set(CPACK_RESOURCE_FILE_README "${CMAKE_CURRENT_SOURCE_DIR}/README.md")
 set(CPACK_STRIP_FILES ON)
@@ -5604,7 +5604,10 @@ set(
 
 # Use WiX toolset version >= 4.0 for building Windows installers.
 set(CPACK_WIX_VERSION 4)
-set(CPACK_WIX_UPGRADE_GUID "921DC99C-4DCF-478D-B950-50685CB9E6BE")
+# BeatFreaks has its own upgrade GUID so installing it never upgrades or
+# removes a real Mixxx installation. Keep in sync with
+# packaging/wix/mixxxupgradecustomaction.cpp.
+set(CPACK_WIX_UPGRADE_GUID "57EBF230-413F-417E-B1D4-165290F285F3")
 set(
   CPACK_WIX_LICENSE_RTF
   "${CMAKE_CURRENT_BINARY_DIR}/packaging/wix/LICENSE.rtf"

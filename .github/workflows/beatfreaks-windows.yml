@@ -1,10 +1,15 @@
-# Builds the BeatFreaks Windows installer (.msi) on every push to main.
+# Builds the BeatFreaks Windows installer (.msi) on every push to main and
+# for every pull request, so changes can be tested on Windows before merging.
 # Download it from the run's "Artifacts" section on GitHub:
 #   Actions -> "BeatFreaks Windows installer" -> latest run -> Artifacts
 name: BeatFreaks Windows installer
 
 on:
   push:
+    branches: [main]
+    paths-ignore:
+      - "**.md"
+  pull_request:
     branches: [main]
     paths-ignore:
       - "**.md"
@@ -22,5 +27,5 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
     with:
-      branch: ${{ github.ref_name }}
+      branch: ${{ github.head_ref || github.ref_name }}
       ref: ${{ github.ref }}
