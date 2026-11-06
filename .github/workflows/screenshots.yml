@@ -1,0 +1,99 @@
+# Takes screenshots of the real BeatFreaks app for the manual and website.
+# Run by hand: Actions -> "BeatFreaks screenshots" -> Run workflow.
+# Installs the newest Windows installer built from main, starts the app,
+# and saves screenshots as an artifact ("screenshots"). Experimental: the
+# first runs will show which windows appear on a fresh install.
+name: BeatFreaks screenshots
+
+on:
+  workflow_dispatch:
+    inputs:
+      run_id:
+        description: "Installer build run ID (empty = newest successful 'BeatFreaks Windows installer' run on main)"
+        required: false
+        default: ""
+
+permissions:
+  contents: read
+  actions: read
+
+jobs:
+  shots:
+    runs-on: windows-latest
+    timeout-minutes: 30
+    steps:
+      - name: Find the installer build
+        id: find
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+          RUN_ID: ${{ inputs.run_id }}
+        run: |
+          $id = $env:RUN_ID
+          if (-not $id) {
+            $id = gh run list -R ${{ github.repository }} --workflow "BeatFreaks Windows installer" --branch main --status success --limit 1 --json databaseId --jq '.[0].databaseId'
+          }
+          if (-not $id) { throw "No successful installer build found" }
+          "run_id=$id" >> $env:GITHUB_OUTPUT
+          Write-Host "Using installer from run $id"
+
+      - name: Download the installer
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          gh run download ${{ steps.find.outputs.run_id }} -R ${{ github.repository }} --dir installer
+          $msi = Get-ChildItem installer -Recurse -Filter *.msi | Select-Object -First 1
+          if (-not $msi) { throw "No .msi in that run's artifacts" }
+          Write-Host "Installer: $($msi.FullName)"
+          "MSI=$($msi.FullName)" >> $env:GITHUB_ENV
+
+      - name: Install silently
+        shell: pwsh
+        run: |
+          $p = Start-Process msiexec.exe -ArgumentList "/i `"$env:MSI`" /qn /norestart /l*v install.log" -Wait -PassThru
+          Write-Host "msiexec exit code $($p.ExitCode)"
+          if ($p.ExitCode -ne 0) { Get-Content install.log -Tail 60; throw "Install failed" }
+          $exe = Get-ChildItem "$env:ProgramFiles" -Recurse -Filter *.exe -ErrorAction SilentlyContinue |
+                 Where-Object { $_.Name -match '^(mixxx|beatfreaks)\.exe$' } | Select-Object -First 1
+          if (-not $exe) { throw "Installed program not found" }
+          Write-Host "Program: $($exe.FullName)"
+          "APP=$($exe.FullName)" >> $env:GITHUB_ENV
+
+      - name: Start the app and take screenshots
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
+          New-Item -ItemType Directory -Force shots | Out-Null
+          function Shot($name) {
+            $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+            $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
+            $g = [System.Drawing.Graphics]::FromImage($bmp)
+            $g.CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
+            $bmp.Save("shots\$name.png", [System.Drawing.Imaging.ImageFormat]::Png)
+            $g.Dispose(); $bmp.Dispose()
+            Write-Host "saved shots\$name.png ($($b.Width)x$($b.Height))"
+          }
+          $music = "$env:RUNNER_TEMP\Music"
+          New-Item -ItemType Directory -Force $music | Out-Null
+          $proc = Start-Process $env:APP -PassThru
+          Start-Sleep 25; Shot "01-first-start"
+          # first run asks for the music folder: type a path and press Enter
+          [System.Windows.Forms.SendKeys]::SendWait($music); Start-Sleep 1
+          [System.Windows.Forms.SendKeys]::SendWait("{ENTER}"); Start-Sleep 15; Shot "02-after-folder"
+          [System.Windows.Forms.SendKeys]::SendWait("{ESC}"); Start-Sleep 10; Shot "03-main-window"
+          Start-Sleep 10; Shot "04-main-window-later"
+          if (-not $proc.HasExited) { Stop-Process -Id $proc.Id -Force }
+          # keep the app's own log next to the pictures
+          Get-ChildItem "$env:LOCALAPPDATA" -Recurse -Filter "*.log" -ErrorAction SilentlyContinue |
+            Where-Object { $_.FullName -match 'BeatFreaks|Mixxx' } | Copy-Item -Destination shots -ErrorAction SilentlyContinue
+
+      - name: Upload screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots
+          path: |
+            shots/
+            install.log
+          if-no-files-found: warn
