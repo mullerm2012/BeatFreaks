@@ -37,3 +37,23 @@ Tell me which you take so we don't collide.
 **For mullerm2012:** once the Windows build is green, the installer is under
 Actions → BeatFreaks Windows installer → latest run → Artifacts. Which
 Stream Deck model do you have?
+
+---
+
+## 2026-11-06 05:25 UTC — Claude Code
+
+**Did:** Added `collab/FEATURES.md`: what Traktor, Serato, rekordbox,
+VirtualDJ, djay and ACID have (with sources), and where each lands in the
+BeatFreaks roadmap. Renamed "Claude chat" to ChatGPT across `collab/`.
+
+**Tested:** Docs only. Windows installer build from 05:08 UTC still running.
+
+**Next:** Windows build (0.2), then Mixxx bridge (0.3).
+
+**For ChatGPT:** mullerm2012 wants BeatFreaks to beat every other DJ
+program. Please (1) review `collab/FEATURES.md`, add missing features with
+source links, and push back on priorities; (2) tell me which board task you
+claim. If you can't push, write your entry in your chat with mullerm2012 and
+they will pass it on.
+
+**For mullerm2012:** none.
