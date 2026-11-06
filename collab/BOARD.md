@@ -18,6 +18,52 @@ see what will make the crowd move. That's the number one thing."
 | N.4 | **Crowd feedback**: one F1 pad/Stream Deck key "crowd hot" / "crowd cold" while a track plays; BeatFreaks learns what moves the owner's crowds | DATA | Open | Stored per track + venue/crowd type |
 | N.5 | Set builder: "1 hour, rising from 100 to 128 BPM, end on crowd movers" → a queue you can edit | — | Open | Uses N.2–N.4; later the AI assistant (7.3) |
 
+## ★ Autopilot — the AI that mixes on its own (said 2026-11-06)
+
+"Mix songs on its own, know where the break is, pick what to play, and do it
+how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
+
+| # | Task | Owner | State | Notes |
+| --- | --- | --- | --- | --- |
+| A.1 | Phrase/section detector → auto intro/outro cues on 8/16/32-bar boundaries | ALPHA | Open | Built-in fallback first, allin1 later (A.7) |
+| A.2 | Transition planner: type (blend / breakdown / drop / loop-extend / echo-out) and start bar | ALPHA | Open | Uses Smart Next + A.1 |
+| A.3 | Transition performer: sync, bass swap, crossfade, FX, recorded as automation lanes | ALPHA | Open | Editable in Arrange mode |
+| A.4 | Hand-off: touch takes over; "Take a break" button on Stream Deck/F1 | ALPHA + DATA | Open | |
+| A.5 | Listening test: 20 transition pairs, owner rates, tune rules | DATA | Open | |
+| A.6 | Autopilot UI: next mix point on waveform, bar countdown, type badge | DATA + ALPHA | Open | |
+| A.8 | **Transition recipes**: blend, filter rise, echo out, loop roll, double drop, motorized spinback, riser, tempo ramp; saved as presets, recorded as lanes | ALPHA + DATA | Open | Owner: "insanely awesome" |
+| A.9 | **FX quality**: click/level/tail/tempo-lock tests in CI for every effect, latency+CPU benchmark, add missing FX (tape stop, riser, beat-masher) | ALPHA (tests) + DATA (sound) | Open | "work better than the other programs" |
+| A.10 | **From here to here**: mark a spot in A and a spot in B, Autopilot plans the phrase-correct transition between them | ALPHA | Open | Also drag in Arrange |
+| A.11 | **Crowd cam**: webcam motion energy + on-beat motion → floor heat → Smart Next crowd score | ALPHA | Open | Motion only, no faces, nothing saved, off by default |
+| A.12 | **AI songs for the floor**: ACE-Step 1.5 (MIT, free, runs locally) built in; plus "Send to Suno" prompt builder + auto-import of downloaded songs; official Suno API if accepted to its partner program | DATA + ALPHA | Open | Owner has no GPU; no unofficial Suno wrappers |
+| A.13 | **Tracklist + mix cover** (PR #8): played list, YouTube chapters, CUE, CSV, cover grid | ALPHA | Review | Owner ask 00:45 |
+| A.7 | Optional AI pack: allin1 sections/downbeats (license, CPU/GPU) | DATA | Open | Research |
+
+## Mobile — BeatFreaks on the phone (owner, 2026-11-06)
+
+"Can any of this be used on a phone? … connect to it all. Like djay Pro."
+
+| # | Task | Owner | State | Notes |
+| --- | --- | --- | --- | --- |
+| M.1 | **BeatFreaks Remote**: the PC serves a phone web app over Wi-Fi (scan a QR code, no app store). Library search, Smart Next queue, Autopilot on/off + "take a break", crowd hot/cold, Send to Suno, tracklist | ALPHA | Open | Local network only, pairing code, nothing on the internet |
+| M.2 | Phone as **crowd cam** (A.11) and wireless F1-style pads | ALPHA + DATA | Open | Motion only, nothing saved |
+| M.3 | Remote look: touch-first BeatFreaks style | DATA | Open | Art brief |
+| M.4 | Song requests: the crowd scans a QR, asks for a song, it lands in the DJ's request list (DJ approves) | ALPHA | Open | |
+| M.5 | Full BeatFreaks on iPad / Android tablet | — | Later | Mixxx has experimental iOS and Android builds; needs a touch UI; phone audio latency is a risk |
+
+## Cloud — save, sync and play from the cloud (owner, 2026-11-06)
+
+"Save mixes on Google Drive… save and retrieve and play back from the cloud… use all the music platforms."
+
+| # | Task | Owner | State | Notes |
+| --- | --- | --- | --- | --- |
+| C.1 | **Cloud folder**: recordings, tracklists, covers, `.bfproj`, crates/settings backup auto-saved into a chosen folder (Google Drive for desktop, OneDrive, Dropbox) | ALPHA | Open | No API keys needed; the desktop sync app uploads |
+| C.2 | **Play from the cloud**: library can include the Drive folder; "Make available offline" button before a gig; warning if a queued song is cloud-only and the internet is down | ALPHA | Open | Gig safety first |
+| C.3 | Direct Google Drive API (upload without the desktop app, share link to a mix) | — | Later | Needs Google OAuth app verification |
+| C.4 | Streaming services: **Spotify (back in rekordbox/Serato/djay since Sept 2025)**, Apple Music, TIDAL, Beatport/Beatsource, SoundCloud. All are partner deals per DJ app; owner applies as BeatFreaks, ALPHA writes the pitch and builds | Owner + ALPHA | Later | Spotify DJ use is personal-use only; no unofficial scrapers |
+| C.6 | **Streaming plug-in slot**: one `StreamingProvider` interface (login, search, playlists, stream to deck, offline cache rules, per-service limits). Each approved service plugs in without touching the decks, Smart Next or Autopilot | ALPHA | Open | Owner 01:00: "leave it open to all of that" |
+| C.5 | Playlist bridge: read the owner's Spotify playlists (names only, Spotify Web API) and match them to songs owned locally; missing ones go on a "to buy" list | ALPHA | Open | Check Spotify developer terms first |
+
 ## Stage 0 — Foundation
 
 | # | Task | Owner | State | Notes |

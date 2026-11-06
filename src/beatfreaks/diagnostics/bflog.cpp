@@ -8,4 +8,7 @@ Q_LOGGING_CATEGORY(bfHwS4, "beatfreaks.hw.s4")
 Q_LOGGING_CATEGORY(bfHwF1, "beatfreaks.hw.f1")
 Q_LOGGING_CATEGORY(bfTest, "beatfreaks.test")
 Q_LOGGING_CATEGORY(bfLibrary, "beatfreaks.library")
+<<<<<<< HEAD
 Q_LOGGING_CATEGORY(bfAi, "beatfreaks.ai")
+=======
+>>>>>>> origin/main
