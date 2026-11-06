@@ -3,7 +3,8 @@
 #
 # GitHub-hosted Windows runners may not have a visible desktop, so every
 # picture is checked before it counts:
-#   - the program is the one this MSI just installed (product name + time),
+#   - the program is the one this MSI just installed (its install folder is
+#     read from the MSI log; product names checked below),
 #   - the process is still running and has a visible main window,
 #   - the window is captured with PrintWindow (works without a desktop),
 #     and an image that is almost one colour is rejected as blank.
@@ -83,31 +84,68 @@ jobs:
           "run_id=$id" >> $env:GITHUB_OUTPUT
           Write-Host "Using installer from run $id"
 
+      # The installer build uploads the .msi as-is (upload-artifact v7,
+      # archive: false), which `gh run download` and download-artifact can't
+      # unpack. Fetch it from the artifacts API directly; unzip only if it
+      # turns out to be a zip.
       - name: Download the installer
         shell: pwsh
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          gh run download ${{ steps.find.outputs.run_id }} -R ${{ github.repository }} --dir installer
+          $run = "${{ steps.find.outputs.run_id }}"
+          $arts = gh api "repos/${{ github.repository }}/actions/runs/$run/artifacts" --jq '.artifacts[] | select(.name | endswith(".msi")) | "\(.id) \(.name) \(.size_in_bytes)"'
+          $arts = @($arts | Where-Object { $_ })
+          if ($arts.Count -ne 1) { throw "Expected exactly one .msi artifact in run $run, found $($arts.Count)" }
+          $id, $name, $size = $arts[0].Split(" ")
+          Write-Host "Artifact $id $name ($size bytes)"
+          # The API redirects to a short-lived storage address; PowerShell
+          # follows it (and drops the token when it leaves api.github.com).
+          New-Item -ItemType Directory -Force installer | Out-Null
+          $out = "installer\download.bin"
+          Invoke-WebRequest -Uri "https://api.github.com/repos/${{ github.repository }}/actions/artifacts/$id/zip" `
+            -Headers @{ Authorization = "Bearer $env:GH_TOKEN"; Accept = "application/vnd.github+json" } `
+            -OutFile $out -UseBasicParsing
+          Write-Host "Downloaded $((Get-Item $out).Length) bytes"
+          $bytes = [System.IO.File]::ReadAllBytes((Resolve-Path $out))
+          if ($bytes.Length -ge 2 -and $bytes[0] -eq 0x50 -and $bytes[1] -eq 0x4B) {
+            Expand-Archive $out -DestinationPath installer -Force; Remove-Item $out
+          } else {
+            Move-Item $out "installer\$name" -Force
+          }
+
+      - name: Pick the installer
+        shell: pwsh
+        run: |
+          Get-ChildItem installer -Recurse | ForEach-Object { Write-Host "downloaded: $($_.FullName) ($($_.Length) bytes)" }
           $msi = @(Get-ChildItem installer -Recurse -Filter *.msi)
           if ($msi.Count -ne 1) { throw "Expected exactly one .msi, found $($msi.Count)" }
+          # An MSI is an OLE compound file: D0 CF 11 E0
+          $head = [System.IO.File]::ReadAllBytes($msi[0].FullName)[0..3]
+          if (-not ($head[0] -eq 0xD0 -and $head[1] -eq 0xCF -and $head[2] -eq 0x11 -and $head[3] -eq 0xE0)) { throw "Downloaded file is not an MSI" }
           Write-Host "Installer: $($msi[0].FullName)"
           "MSI=$($msi[0].FullName)" >> $env:GITHUB_ENV
 
       - name: Install silently and find the installed program
         shell: pwsh
         run: |
-          $before = Get-Date
           $p = Start-Process msiexec.exe -ArgumentList "/i `"$env:MSI`" /qn /norestart /l*v install.log" -Wait -PassThru
           Write-Host "msiexec exit code $($p.ExitCode)"
           if ($p.ExitCode -ne 0) { Get-Content install.log -Tail 60; throw "Install failed" }
-          # Only programs written by this install, in the expected folders.
-          $roots = @("$env:ProgramFiles\BeatFreaks", "$env:ProgramFiles\Mixxx") | Where-Object { Test-Path $_ }
-          # MSI keeps the build date as "modified", so use "created" (= install time).
+          # Where did this MSI install to? Read it from its own log
+          # (WiX/CPack uses INSTALL_ROOT), so we never pick another copy.
+          $props = Select-String -Path install.log -Pattern 'Property\(S\): (INSTALL_ROOT|INSTALLDIR|INSTALLFOLDER|APPLICATIONFOLDER) = (.+)$'
+          $props | ForEach-Object { Write-Host "MSI property: $($_.Matches[0].Groups[1].Value) = $($_.Matches[0].Groups[2].Value)" }
+          $roots = @($props | ForEach-Object { $_.Matches[0].Groups[2].Value.Trim() } | Where-Object { Test-Path $_ } | Select-Object -Unique)
+          if ($roots.Count -eq 0) {
+            Get-ChildItem $env:ProgramFiles -Directory | ForEach-Object { Write-Host "Program Files: $($_.Name)" }
+            throw "Could not find this MSI's install folder in install.log"
+          }
           $candidates = @(foreach ($r in $roots) {
             Get-ChildItem $r -Recurse -Filter *.exe -ErrorAction SilentlyContinue |
-              Where-Object { ($_.Name -match '^(mixxx|beatfreaks)\.exe$') -and ($_.CreationTime -ge $before.AddMinutes(-1)) }
+              Where-Object { $_.Name -match '^(mixxx|beatfreaks)\.exe$' }
           })
+          $candidates | ForEach-Object { Write-Host "found: $($_.FullName)" }
           if ($candidates.Count -ne 1) {
             $candidates | ForEach-Object { Write-Host "candidate: $($_.FullName)" }
             throw "Expected exactly one freshly installed program, found $($candidates.Count)"
@@ -194,9 +232,17 @@ jobs:
 
           $music = "$env:RUNNER_TEMP\Music"
           New-Item -ItemType Directory -Force $music | Out-Null
+          # Hosted runners have no GPU. Ask Qt to draw OpenGL in software
+          # (opengl32sw.dll, if the build ships it) so windows aren't black.
+          $env:QT_OPENGL = "software"
+          $sw = Test-Path (Join-Path (Split-Path $env:APP) "opengl32sw.dll")
+          Write-Host "Software OpenGL DLL shipped: $sw"
           $proc = Start-Process $env:APP -PassThru
           Start-Sleep 25
           Shot $proc "01-first-start"
+          # A warning dialog may be in front (e.g. "OpenGL Direct Rendering"); OK it.
+          [System.Windows.Forms.SendKeys]::SendWait("{ENTER}"); Start-Sleep 5
+          Shot $proc "01b-after-dialog"
           # First run asks for the music folder. Type a path and press Enter.
           $proc.Refresh()
           if ($proc.MainWindowHandle -ne [IntPtr]::Zero) { [void][Win]::SetForegroundWindow($proc.MainWindowHandle) }
