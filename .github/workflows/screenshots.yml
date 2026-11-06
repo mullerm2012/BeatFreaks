@@ -1,8 +1,14 @@
-# Takes screenshots of the real BeatFreaks app for the manual and website.
-# Run by hand: Actions -> "BeatFreaks screenshots" -> Run workflow.
-# Installs the newest Windows installer built from main, starts the app,
-# and saves screenshots as an artifact ("screenshots"). Experimental: the
-# first runs will show which windows appear on a fresh install.
+# EXPERIMENTAL: takes screenshots of the real BeatFreaks app for the manual
+# and website. Run by hand: Actions -> "BeatFreaks screenshots" -> Run workflow.
+#
+# GitHub-hosted Windows runners may not have a visible desktop, so every
+# picture is checked before it counts:
+#   - the program is the one this MSI just installed (product name + time),
+#   - the process is still running and has a visible main window,
+#   - the window is captured with PrintWindow (works without a desktop),
+#     and an image that is almost one colour is rejected as blank.
+# Pictures that pass go to the "screenshots-verified" artifact. Nothing
+# goes into the manual until a person has looked at them.
 name: BeatFreaks screenshots
 
 on:
@@ -43,57 +49,128 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           gh run download ${{ steps.find.outputs.run_id }} -R ${{ github.repository }} --dir installer
-          $msi = Get-ChildItem installer -Recurse -Filter *.msi | Select-Object -First 1
-          if (-not $msi) { throw "No .msi in that run's artifacts" }
-          Write-Host "Installer: $($msi.FullName)"
-          "MSI=$($msi.FullName)" >> $env:GITHUB_ENV
+          $msi = @(Get-ChildItem installer -Recurse -Filter *.msi)
+          if ($msi.Count -ne 1) { throw "Expected exactly one .msi, found $($msi.Count)" }
+          Write-Host "Installer: $($msi[0].FullName)"
+          "MSI=$($msi[0].FullName)" >> $env:GITHUB_ENV
 
-      - name: Install silently
+      - name: Install silently and find the installed program
         shell: pwsh
         run: |
+          $before = Get-Date
           $p = Start-Process msiexec.exe -ArgumentList "/i `"$env:MSI`" /qn /norestart /l*v install.log" -Wait -PassThru
           Write-Host "msiexec exit code $($p.ExitCode)"
           if ($p.ExitCode -ne 0) { Get-Content install.log -Tail 60; throw "Install failed" }
-          $exe = Get-ChildItem "$env:ProgramFiles" -Recurse -Filter *.exe -ErrorAction SilentlyContinue |
-                 Where-Object { $_.Name -match '^(mixxx|beatfreaks)\.exe$' } | Select-Object -First 1
-          if (-not $exe) { throw "Installed program not found" }
-          Write-Host "Program: $($exe.FullName)"
+          # Only programs written by this install, in the expected folders.
+          $roots = @("$env:ProgramFiles\BeatFreaks", "$env:ProgramFiles\Mixxx") | Where-Object { Test-Path $_ }
+          # MSI keeps the build date as "modified", so use "created" (= install time).
+          $candidates = @(foreach ($r in $roots) {
+            Get-ChildItem $r -Recurse -Filter *.exe -ErrorAction SilentlyContinue |
+              Where-Object { ($_.Name -match '^(mixxx|beatfreaks)\.exe$') -and ($_.CreationTime -ge $before.AddMinutes(-1)) }
+          })
+          if ($candidates.Count -ne 1) {
+            $candidates | ForEach-Object { Write-Host "candidate: $($_.FullName)" }
+            throw "Expected exactly one freshly installed program, found $($candidates.Count)"
+          }
+          $exe = $candidates[0]
+          $info = $exe.VersionInfo
+          Write-Host "Program: $($exe.FullName)  product='$($info.ProductName)' version='$($info.ProductVersion)'"
           "APP=$($exe.FullName)" >> $env:GITHUB_ENV
 
-      - name: Start the app and take screenshots
+      - name: Start the app and take checked screenshots
         shell: pwsh
         run: |
-          Add-Type -AssemblyName System.Windows.Forms, System.Drawing
-          New-Item -ItemType Directory -Force shots | Out-Null
-          function Shot($name) {
-            $b = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
-            $bmp = New-Object System.Drawing.Bitmap $b.Width, $b.Height
-            $g = [System.Drawing.Graphics]::FromImage($bmp)
-            $g.CopyFromScreen($b.Location, [System.Drawing.Point]::Empty, $b.Size)
-            $bmp.Save("shots\$name.png", [System.Drawing.Imaging.ImageFormat]::Png)
-            $g.Dispose(); $bmp.Dispose()
-            Write-Host "saved shots\$name.png ($($b.Width)x$($b.Height))"
+          Add-Type -AssemblyName System.Drawing, System.Windows.Forms
+          Add-Type @"
+          using System;
+          using System.Runtime.InteropServices;
+          public static class Win {
+            [DllImport("user32.dll")] public static extern bool IsWindowVisible(IntPtr h);
+            [DllImport("user32.dll")] public static extern bool GetWindowRect(IntPtr h, out RECT r);
+            [DllImport("user32.dll")] public static extern bool PrintWindow(IntPtr h, IntPtr hdc, uint flags);
+            [DllImport("user32.dll")] public static extern bool SetForegroundWindow(IntPtr h);
+            [StructLayout(LayoutKind.Sequential)] public struct RECT { public int Left, Top, Right, Bottom; }
           }
+          "@
+          New-Item -ItemType Directory -Force shots, rejected | Out-Null
+          $script:good = 0
+
+          function Test-Content([System.Drawing.Bitmap]$bmp) {
+            # Sample a grid; a real window has many different colours.
+            $colors = @{}
+            for ($x = 0; $x -lt $bmp.Width; $x += [Math]::Max(1, [int]($bmp.Width / 40))) {
+              for ($y = 0; $y -lt $bmp.Height; $y += [Math]::Max(1, [int]($bmp.Height / 40))) {
+                $colors[$bmp.GetPixel($x, $y).ToArgb()] = 1
+              }
+            }
+            return $colors.Count
+          }
+
+          function Shot([System.Diagnostics.Process]$proc, [string]$name) {
+            $proc.Refresh()
+            if ($proc.HasExited) { Write-Host "::warning::$name - app has exited (code $($proc.ExitCode))"; return }
+            $h = $proc.MainWindowHandle
+            if ($h -eq [IntPtr]::Zero) { Write-Host "::warning::$name - no main window yet"; return }
+            if (-not [Win]::IsWindowVisible($h)) { Write-Host "::warning::$name - main window not visible"; return }
+            $r = New-Object Win+RECT
+            [void][Win]::GetWindowRect($h, [ref]$r)
+            $w = $r.Right - $r.Left; $hgt = $r.Bottom - $r.Top
+            if ($w -lt 200 -or $hgt -lt 150) { Write-Host "::warning::$name - window too small ($w x $hgt)"; return }
+            $bmp = New-Object System.Drawing.Bitmap $w, $hgt
+            $g = [System.Drawing.Graphics]::FromImage($bmp)
+            $hdc = $g.GetHdc()
+            $ok = [Win]::PrintWindow($h, $hdc, 2)   # PW_RENDERFULLCONTENT
+            $g.ReleaseHdc($hdc); $g.Dispose()
+            $n = Test-Content $bmp
+            $title = $proc.MainWindowTitle
+            if ($ok -and $n -ge 12) {
+              $bmp.Save("shots\$name.png", [System.Drawing.Imaging.ImageFormat]::Png)
+              "$name.png`t$w x $hgt`tcolours=$n`ttitle=$title" | Add-Content shots\CHECK.txt
+              $script:good++
+              Write-Host "OK $name ($w x $hgt, $n colours, '$title')"
+            } else {
+              $bmp.Save("rejected\$name.png", [System.Drawing.Imaging.ImageFormat]::Png)
+              Write-Host "::warning::$name rejected (PrintWindow=$ok, colours=$n)"
+            }
+            $bmp.Dispose()
+          }
+
           $music = "$env:RUNNER_TEMP\Music"
           New-Item -ItemType Directory -Force $music | Out-Null
           $proc = Start-Process $env:APP -PassThru
-          Start-Sleep 25; Shot "01-first-start"
-          # first run asks for the music folder: type a path and press Enter
+          Start-Sleep 25
+          Shot $proc "01-first-start"
+          # First run asks for the music folder. Type a path and press Enter.
+          $proc.Refresh()
+          if ($proc.MainWindowHandle -ne [IntPtr]::Zero) { [void][Win]::SetForegroundWindow($proc.MainWindowHandle) }
           [System.Windows.Forms.SendKeys]::SendWait($music); Start-Sleep 1
-          [System.Windows.Forms.SendKeys]::SendWait("{ENTER}"); Start-Sleep 15; Shot "02-after-folder"
-          [System.Windows.Forms.SendKeys]::SendWait("{ESC}"); Start-Sleep 10; Shot "03-main-window"
-          Start-Sleep 10; Shot "04-main-window-later"
+          [System.Windows.Forms.SendKeys]::SendWait("{ENTER}"); Start-Sleep 15
+          Shot $proc "02-after-folder"
+          [System.Windows.Forms.SendKeys]::SendWait("{ESC}"); Start-Sleep 10
+          Shot $proc "03-main-window"
+          Start-Sleep 10
+          Shot $proc "04-main-window-later"
+          $proc.Refresh()
           if (-not $proc.HasExited) { Stop-Process -Id $proc.Id -Force }
-          # keep the app's own log next to the pictures
           Get-ChildItem "$env:LOCALAPPDATA" -Recurse -Filter "*.log" -ErrorAction SilentlyContinue |
             Where-Object { $_.FullName -match 'BeatFreaks|Mixxx' } | Copy-Item -Destination shots -ErrorAction SilentlyContinue
+          Write-Host "Verified screenshots: $script:good"
+          if ($script:good -eq 0) { throw "No screenshot passed the checks (see 'screenshots-rejected')" }
 
-      - name: Upload screenshots
+      - name: Upload verified screenshots
         if: always()
         uses: actions/upload-artifact@v4
         with:
-          name: screenshots
+          name: screenshots-verified
           path: |
             shots/
             install.log
           if-no-files-found: warn
+
+      - name: Upload rejected screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: screenshots-rejected
+          path: rejected/
+          if-no-files-found: ignore
