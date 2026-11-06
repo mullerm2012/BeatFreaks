@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BeatFreaks</title>
+<meta name="description" content="BeatFreaks: live DJ decks and an ACID-style arranger in one Windows app. Smart Next, Autopilot, AI songs. One-time price, no subscription.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;700&family=IBM+Plex+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@500&display=swap" rel="stylesheet">
+<style>
+  /* BeatFreaks brand: void black, acid lime, hot pink, cyan. One dark world on purpose.
+     Layout idea: a deck-like page; every feature carries an honest status chip. */
+  :root{
+    --void:#08080A; --panel:#111116; --line:#24242D; --text:#ECECF2; --dim:#9696A6;
+    --lime:#C6FF00; --pink:#FF2E88; --cyan:#00E5FF;
+    --display:"Chakra Petch", "Segoe UI", system-ui, sans-serif;
+    --body:"IBM Plex Sans", "Segoe UI", system-ui, sans-serif;
+    --mono:"IBM Plex Mono", ui-monospace, Consolas, monospace;
+    color-scheme:dark;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  @media (prefers-reduced-motion:reduce){html{scroll-behavior:auto}}
+  body{margin:0;background:var(--void);color:var(--text);font:16px/1.6 var(--body);
+       background-image:linear-gradient(rgba(198,255,0,.03) 1px,transparent 1px),linear-gradient(90deg,rgba(198,255,0,.03) 1px,transparent 1px);background-size:32px 32px}
+  a{color:var(--cyan)}
+  a:focus-visible,button:focus-visible{outline:2px solid var(--lime);outline-offset:3px}
+  .wrap{max-width:1080px;margin:0 auto;padding:0 20px}
+  h1,h2,h3{font-family:var(--display);letter-spacing:.02em;text-wrap:balance;margin:0}
+  h2{font-size:clamp(26px,4vw,36px);margin-bottom:8px}
+  h3{font-size:19px}
+  p{margin:0}
+  .lead{color:var(--dim);max-width:62ch}
+  section{padding:56px 0;border-top:1px solid var(--line)}
+  /* nav */
+  nav{position:sticky;top:0;z-index:5;background:rgba(8,8,10,.92);backdrop-filter:blur(6px);border-bottom:1px solid var(--line)}
+  nav .wrap{display:flex;align-items:center;gap:18px;height:58px}
+  nav .brand{font-family:var(--display);font-weight:700;color:var(--lime);text-decoration:none;font-size:20px;letter-spacing:.06em;text-shadow:1.5px 0 var(--pink),-1.5px 0 var(--cyan)}
+  nav .links{display:flex;gap:16px;margin-left:auto;flex-wrap:wrap}
+  nav .links a{color:var(--dim);text-decoration:none;font-size:14px}
+  nav .links a:hover{color:var(--text)}
+  @media (max-width:720px){nav .links a:not(.keep){display:none}}
+  /* hero */
+  .hero{padding:56px 0 48px;display:grid;grid-template-columns:1.1fr .9fr;gap:40px;align-items:center}
+  @media (max-width:860px){.hero{grid-template-columns:1fr}}
+  .chip{display:inline-flex;align-items:center;gap:6px;font:500 12px var(--mono);text-transform:uppercase;letter-spacing:.08em;border:1px solid var(--line);border-radius:999px;padding:4px 10px;color:var(--dim)}
+  .chip.live{color:var(--lime);border-color:rgba(198,255,0,.45)}
+  .chip.dev{color:var(--cyan);border-color:rgba(0,229,255,.45)}
+  .chip.plan{color:var(--pink);border-color:rgba(255,46,136,.45)}
+  .hero h1{font-size:clamp(36px,6vw,60px);line-height:1.05;margin:14px 0}
+  .hero h1 em{font-style:normal;color:var(--lime)}
+  .cta{display:flex;gap:12px;flex-wrap:wrap;margin-top:24px}
+  .btn{font:700 15px var(--display);letter-spacing:.04em;padding:12px 18px;border-radius:10px;text-decoration:none;border:1px solid var(--line);color:var(--text);background:#16161C;cursor:pointer;display:inline-block}
+  .btn.go{background:var(--lime);color:#000;border-color:var(--lime)}
+  .btn[aria-disabled="true"]{opacity:.6;cursor:not-allowed}
+  .deck{background:var(--panel);border:1px solid var(--lime);border-radius:16px;padding:18px;box-shadow:0 0 40px rgba(198,255,0,.07)}
+  .deck .row{display:flex;justify-content:space-between;align-items:center;gap:10px;font-family:var(--mono);font-size:13px;color:var(--dim)}
+  .deck .title{font:600 18px var(--body);color:var(--text);margin:8px 0 2px}
+  .deck .pills{display:flex;gap:8px;margin:10px 0}
+  .pill{font:700 13px var(--display);border:1px solid var(--line);border-radius:999px;padding:3px 10px}
+  .pill.c{color:var(--cyan);border-color:rgba(0,229,255,.4)} .pill.p{color:var(--pink);border-color:rgba(255,46,136,.4)}
+  .wave{height:56px;display:flex;align-items:center;gap:3px;margin:10px 0}
+  .wave i{flex:1;background:var(--cyan);border-radius:2px;opacity:.85}
+  .next{border-top:1px solid var(--line);padding-top:10px;margin-top:6px}
+  .next li{display:flex;justify-content:space-between;gap:8px;font-size:14px;padding:6px 0;border-bottom:1px dashed var(--line)}
+  .next li b{font-family:var(--display);color:var(--lime);min-width:28px}
+  .next ul{list-style:none;margin:6px 0 0;padding:0}
+  .next small{color:var(--dim)}
+  /* grids */
+  .grid{display:grid;gap:16px;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));margin-top:26px}
+  .card{background:var(--panel);border:1px solid var(--line);border-radius:14px;padding:18px;display:flex;flex-direction:column;gap:8px}
+  .card p{color:var(--dim);font-size:15px}
+  .modes .card h3{color:var(--lime)}
+  /* status legend */
+  .legend{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin-top:14px}
+  .card .chip,.plan .chip{align-self:flex-start}
+  /* pricing */
+  .price{display:grid;grid-template-columns:1.2fr .8fr;gap:16px;margin-top:26px}
+  @media (max-width:820px){.price{grid-template-columns:1fr}}
+  .plan{background:var(--panel);border:1px solid var(--lime);border-radius:16px;padding:24px}
+  .amount{font:700 52px/1 var(--display);color:var(--lime);margin:12px 0 4px;font-variant-numeric:tabular-nums}
+  .amount s{font-size:24px;color:var(--dim);margin-left:10px}
+  ul.ticks{list-style:none;padding:0;margin:16px 0 0;display:grid;gap:8px}
+  ul.ticks li{padding-left:24px;position:relative;font-size:15px}
+  ul.ticks li::before{content:"";position:absolute;left:4px;top:.55em;width:9px;height:9px;background:var(--lime);transform:rotate(45deg)}
+  .side{display:grid;gap:16px}
+  .note{font-size:13px;color:var(--dim);margin-top:14px}
+  /* table */
+  .tablewrap{overflow-x:auto;margin-top:22px}
+  table{border-collapse:collapse;width:100%;min-width:560px;font-size:15px}
+  th,td{text-align:left;padding:10px 12px;border-bottom:1px solid var(--line)}
+  th{font:600 13px var(--mono);text-transform:uppercase;letter-spacing:.06em;color:var(--dim)}
+  td.num{font-variant-numeric:tabular-nums}
+  tr.us td{color:var(--lime);font-weight:600}
+  /* faq */
+  details{background:var(--panel);border:1px solid var(--line);border-radius:12px;padding:14px 16px}
+  details+details{margin-top:10px}
+  summary{cursor:pointer;font-weight:600}
+  details p{color:var(--dim);margin-top:8px;max-width:72ch}
+  footer{border-top:1px solid var(--line);padding:32px 0 48px;color:var(--dim);font-size:14px}
+  footer .wrap{display:grid;gap:10px}
+</style>
+</head>
+<body>
+<nav>
+  <div class="wrap">
+    <a class="brand" href="#top">BEATFREAKS</a>
+    <div class="links">
+      <a href="#modes">Modes</a><a href="#features">Features</a><a href="#controllers">Controllers</a>
+      <a class="keep" href="#pricing">Pricing</a><a class="keep" href="#download">Download</a><a href="#faq">FAQ</a>
+    </div>
+  </div>
+</nav>
+
+<header class="wrap hero" id="top">
+  <div>
+    <span class="chip dev">Early access · Windows 10 / 11</span>
+    <h1>Mix it live. <em>Arrange it after.</em> One app.</h1>
+    <p class="lead">BeatFreaks puts four DJ decks and an ACID-style multitrack arranger in one program. Every platter push, fader ride and effect you play is recorded as editable lanes, so a live set becomes a mix you can fix bar by bar.</p>
+    <div class="cta">
+      <a class="btn go" href="#download">Join the beta</a>
+      <a class="btn" href="#pricing">One-time price, no subscription</a>
+    </div>
+  </div>
+  <div class="deck" aria-label="Example of the Smart Next panel">
+    <div class="row"><span>DECK A · NOW PLAYING</span><span>02:41 / 06:12</span></div>
+    <div class="title">Neon Undertow</div>
+    <div class="row"><span>Example track</span></div>
+    <div class="pills"><span class="pill c">126.0 BPM</span><span class="pill p">8A</span><span class="pill">tech house</span></div>
+    <div class="wave" aria-hidden="true" id="wave"></div>
+    <div class="next">
+      <div class="row"><span>SMART NEXT · BUILD</span><span>key · tempo · energy · crowd</span></div>
+      <ul>
+        <li><span><b>91</b> Freak Frequency</span><small>8A → 8A · −1.6% · energy ↑</small></li>
+        <li><span><b>90</b> Bolt Line</span><small>8A → 9A · +0.0% · crowd mover</small></li>
+        <li><span><b>87</b> Bassline Freak</span><small>8A → 9A · −0.8% · energy ↑</small></li>
+      </ul>
+    </div>
+  </div>
+</header>
+
+<section id="modes">
+  <div class="wrap">
+    <h2>Three ways to play</h2>
+    <p class="lead">Switch at any time. The same songs, decks and recordings follow you between modes.</p>
+    <div class="grid modes">
+      <div class="card"><h3>DJ</h3><p>Four decks, sync, key lock, loops, hot cues and effects, built for the Traktor Kontrol S4 MK3 and F1 and 160+ other controllers.</p></div>
+      <div class="card"><h3>Arrange</h3><p>An ACID-style timeline: a song or loop on each track, tempo-matched, with automation lanes for every control.</p></div>
+      <div class="card"><h3>Hybrid</h3><p>Play the decks live while the arranger records. Punch in, touch or latch any lane, then go back and tidy the take.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="features">
+  <div class="wrap">
+    <h2>What's inside</h2>
+    <p class="lead">BeatFreaks is in active development. Every feature says where it stands.</p>
+    <div class="legend"><span class="chip live">In the beta</span><span class="chip dev">In development</span><span class="chip plan">Planned</span></div>
+    <div class="grid">
+      <div class="card"><span class="chip dev">In development</span><h3>Smart Next</h3><p>Scans your music for BPM, key and energy, then ranks what to play next by Camelot key, tempo (incl. half and double time), where you want the night to go, and what moved your crowd.</p></div>
+      <div class="card"><span class="chip live">In the beta</span><h3>Four decks + 160+ controllers</h3><p>Built on Mixxx's proven engine and controller library: Pioneer, Numark, Hercules, Traktor, Denon, Reloop and more.</p></div>
+      <div class="card"><span class="chip dev">In development</span><h3>Live moves become lanes</h3><p>Pitch, EQ, filter, FX and platter moves are recorded as automation on the timeline. Edit one fader move without redoing the mix.</p></div>
+      <div class="card"><span class="chip dev">In development</span><h3>AI songs for the floor</h3><p>When the floor goes quiet, BeatFreaks writes a request in your key and tempo for the free, offline ACE-Step model, or a ready-to-paste Suno prompt. New downloads land in your queue.</p></div>
+      <div class="card"><span class="chip dev">In development</span><h3>Played list and mix cover</h3><p>Every set produces a timestamped tracklist, YouTube chapters, a CUE sheet that splits the recording, and a cover for the mix.</p></div>
+      <div class="card"><span class="chip plan">Planned</span><h3>Autopilot</h3><p>Hand the set over and take a break. It finds the phrases, picks a transition (blend, filter rise, loop roll, echo out, spinback) and mixes on the bar. Touch a control to take it back.</p></div>
+      <div class="card"><span class="chip plan">Planned</span><h3>Phone remote</h3><p>Scan a QR code and your phone becomes a remote over Wi-Fi: Smart Next, Autopilot, crowd hot/cold and song requests.</p></div>
+      <div class="card"><span class="chip plan">Planned</span><h3>Stream and record</h3><p>OBS scene control and Elgato Stream Deck keys, plus one-press set recording with the tracklist saved beside it.</p></div>
+      <div class="card"><span class="chip plan">Planned</span><h3>Cloud folder</h3><p>Recordings, crates and projects saved to Google Drive, OneDrive or Dropbox, with an offline-before-the-gig check.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="controllers">
+  <div class="wrap">
+    <h2>Every controller, every button</h2>
+    <p class="lead">BeatFreaks ships 164 ready-made controller mappings. For gear that isn't covered yet (first up: Pioneer DDJ-WeGO4 and Numark 4TRAK), a capture tool records your controller and we build a full mapping from it. A button editor lets you put any BeatFreaks action on any button, with no code.</p>
+  </div>
+</section>
+
+<section id="pricing">
+  <div class="wrap">
+    <h2>Buy it once. Keep it.</h2>
+    <p class="lead">No subscription. One payment covers the official signed installer for Windows and every update in version 1.</p>
+    <div class="price">
+      <div class="plan">
+        <span class="chip dev">Proposed launch price</span>
+        <div class="amount">$99 <s>$149</s></div>
+        <p class="lead">Founder price for the first release, then $149.</p>
+        <ul class="ticks">
+          <li>BeatFreaks for Windows, all features, all 1.x updates</li>
+          <li>Install on your own computers; 2 downloads per order, reset for a new PC</li>
+          <li>BeatFreaks account for online extras on up to 3 of your devices</li>
+          <li>Phone remote, AI song requests and cloud folder as they ship</li>
+          <li>Pays for development, signing, support and the BeatFreaks services</li>
+        </ul>
+        <div class="cta"><a class="btn go" href="#download" aria-disabled="true" title="The store opens at launch">Store opens at launch</a></div>
+        <p class="note">Prices are a proposal and may change before launch. Taxes are added at checkout by our payment provider.</p>
+      </div>
+      <div class="side">
+        <div class="card"><span class="chip live">Beta testers</span><h3>Send your logs, save 20%</h3><p>Use the beta with your own gear and send logs from the Help menu. Everyone who sends a useful report gets a discount code for the full version.</p></div>
+        <div class="card"><span class="chip">Open source</span><h3>Built in the open</h3><p>BeatFreaks is free software under the GPL, built on Mixxx. You can always get the source code. Your purchase pays for the official build, updates, support and the online services.</p></div>
+      </div>
+    </div>
+    <div class="tablewrap">
+      <table>
+        <caption class="note" style="caption-side:bottom;text-align:left">Competitor prices as published in 2026; check each vendor for current offers.</caption>
+        <thead><tr><th>Software</th><th>One-time</th><th>Monthly option</th></tr></thead>
+        <tbody>
+          <tr class="us"><td>BeatFreaks (proposed)</td><td class="num">$99 founder / $149</td><td>None</td></tr>
+          <tr><td>Traktor Pro 4</td><td class="num">$149</td><td>None</td></tr>
+          <tr><td>Serato DJ Pro</td><td class="num">$299</td><td class="num">$11.99</td></tr>
+          <tr><td>VirtualDJ Pro</td><td class="num">about $299</td><td class="num">$19</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<section id="download">
+  <div class="wrap">
+    <h2>Download</h2>
+    <p class="lead">The public beta is being prepared. Test builds are made automatically for every change and checked by our test suite. The first public beta ships once it has passed testing on real controllers.</p>
+    <div class="grid">
+      <div class="card"><h3>System requirements</h3><p>Windows 10 or 11, 64-bit. 8 GB RAM recommended. A graphics card with 4 GB of memory makes AI songs much faster (optional).</p></div>
+      <div class="card"><h3>Try it safely</h3><p>On Windows 11 Pro you can install the beta in Windows Sandbox first: a throwaway copy of Windows that forgets everything when you close it.</p></div>
+      <div class="card"><h3>Get the beta</h3><p>Follow development and get beta builds on <a href="https://github.com/mullerm2012/BeatFreaks">GitHub</a>.</p></div>
+    </div>
+  </div>
+</section>
+
+<section id="faq">
+  <div class="wrap">
+    <h2>Questions</h2>
+    <div style="margin-top:22px">
+      <details><summary>Is there a monthly fee?</summary><p>No. You pay once. Version 1 updates are included. If a future version 2 is a big step up, upgrades will also be a one-time price, and version 1 keeps working.</p></details>
+      <details><summary>Can I use it on my phone?</summary><p>First comes the phone remote: your phone controls BeatFreaks on your PC over Wi-Fi. A full BeatFreaks for tablets and phones is planned later. Mixxx, which BeatFreaks is built on, already has experimental mobile builds.</p></details>
+      <details><summary>Can I use Spotify, Apple Music, TIDAL, Beatport or SoundCloud?</summary><p>Not yet. These services only allow DJ apps they have approved, and we are applying. Today BeatFreaks plays the music files you own, from your PC or your cloud folder.</p></details>
+      <details><summary>Does it work with my Traktor S4 MK3 and F1?</summary><p>Yes. Both have built-in mappings, and BeatFreaks adds its own features to their spare buttons.</p></details>
+      <details><summary>Why is it paid if it is open source?</summary><p>The GPL licence lets anyone sell copies and requires that buyers can get the source code. BeatFreaks follows that. What you pay for is the official signed installer, updates, support and the online services.</p></details>
+      <details><summary>Will my Mac work?</summary><p>Windows comes first. A Mac version is possible later because the engine is cross-platform.</p></details>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="wrap">
+    <p>BeatFreaks is built on <a href="https://mixxx.org">Mixxx</a>, free DJ software by the Mixxx Development Team, and is released under the GNU GPL version 2 or later. BeatFreaks is an independent project and is not affiliated with or endorsed by the Mixxx project, Native Instruments, Pioneer DJ, Numark or any streaming service named here.</p>
+    <p>Questions and bug reports: <a href="https://github.com/mullerm2012/BeatFreaks/issues">GitHub issues</a>.</p>
+  </div>
+</footer>
+
+<script>
+  // decorative waveform for the example deck
+  (function(){
+    var w=document.getElementById('wave'); if(!w) return;
+    for(var i=0;i<64;i++){var b=document.createElement('i');var h=20+Math.abs(Math.sin(i*0.55)*60)+(i%4===0?18:0);b.style.height=Math.min(100,h)+'%';if(i<26)b.style.background='#C6FF00';w.appendChild(b);}
+  })();
+</script>
+</body>
+</html>
