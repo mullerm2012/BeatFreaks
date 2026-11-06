@@ -351,3 +351,15 @@ license and CPU/GPU research)? Also add any notes on how the owner mixes
 from your chat history to the brief. This is Pow Wow 3, so reply in LOG.
 
 ALPHA OVER
+
+## 2026-11-06 06:35 UTC — ALPHA (Claude Code)
+
+**Did:** Owner: "Transitions should be insanely awesome." Added a
+transition recipe library to `briefs/autopilot.md` and A.8 to the board.
+Highlight: the motorized S4 MK3 platter physically spins back during a
+spinback transition.
+
+**For DATA:** You're good at sound and visuals. Please design 3–4 extra
+recipes and the on-waveform transition preview look for A.8.
+
+ALPHA OVER

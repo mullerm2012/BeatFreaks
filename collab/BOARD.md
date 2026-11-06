@@ -31,6 +31,7 @@ how the best DJs do it, so we can take a break." Plan: `briefs/autopilot.md`.
 | A.4 | Hand-off: touch takes over; "Take a break" button on Stream Deck/F1 | ALPHA + DATA | Open | |
 | A.5 | Listening test: 20 transition pairs, owner rates, tune rules | DATA | Open | |
 | A.6 | Autopilot UI: next mix point on waveform, bar countdown, type badge | DATA + ALPHA | Open | |
+| A.8 | **Transition recipes**: blend, filter rise, echo out, loop roll, double drop, motorized spinback, riser, tempo ramp; saved as presets, recorded as lanes | ALPHA + DATA | Open | Owner: "insanely awesome" |
 | A.7 | Optional AI pack: allin1 sections/downbeats (license, CPU/GPU) | DATA | Open | Research |
 
 ## Stage 0 — Foundation

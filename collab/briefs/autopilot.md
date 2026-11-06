@@ -76,3 +76,34 @@ have the decks back on the next phrase, without a jump.
 | A.5 | Listening test set: 20 transition pairs across genres, rated by the owner; tune the rules from the results | DATA |
 | A.6 | Autopilot UI: the next mix point on the waveform, a countdown in bars, the transition type badge | DATA (art) + ALPHA |
 | A.7 | Optional AI pack: allin1 sections/downbeats (check license, GPU/CPU) | DATA research, ALPHA hook |
+
+## Transition library — "insanely awesome" (owner, 2026-11-06)
+
+Every transition is a **recipe**: a short timeline of automation moves on a
+phrase grid. Recipes are saved like presets, so the owner and DATA can make
+more and Autopilot picks from them. A recipe can only fire when it fits the
+two tracks (key, BPM, sections).
+
+| Recipe | What you hear | When Autopilot uses it |
+|---|---|---|
+| Long blend + bass swap | 32-bar blend, lows swap on the downbeat | Default, same energy |
+| Filter rise | High-pass sweeps up on the outgoing track over 16 bars, new track slams in on the 1 | Building energy |
+| Echo out | Echo freeze on the last beat, new track drops clean | Key clash or big BPM jump |
+| Loop roll | Loop shrinks 4 → 2 → 1 → ½ → ¼ beat, then the new drop | Into a drop |
+| Double drop | Both drops hit on the same 1, then the old one fades | Peak time, matching keys |
+| Breakdown swap | New track's breakdown takes over the old one's | Energy reset |
+| Spinback / brake | **The S4 MK3 platter physically spins back** on screen and on the deck, and the new track hits | Genre or tempo change, crowd hype |
+| Riser + impact | F1 sample riser builds, impact on the drop | Big moments |
+| Acapella layer | Vocal from the next track over the outgoing beat (stems) | When stems are available |
+| Tempo ramp | Gradual tempo glide across 16–32 bars | Changing BPM range (e.g. 128 → 138) |
+| Harmonic lift | Key shift +1 semitone for the next track (energy boost on the Camelot wheel) | Long sets, keep it fresh |
+
+Rules: a transition never starts mid-phrase. FX tails end on a bar line. No
+two identical recipes back to back. Every transition is recorded as lanes,
+so it can be edited in Arrange mode.
+
+Visuals: the next transition appears on the waveform with a bar countdown,
+the recipe name and a preview. Optional OBS scene flash or Stream Deck
+light on the drop.
+
+| A.8 | Transition recipe format + editor; first 6 recipes (blend, filter rise, echo out, loop roll, double drop, spinback) | ALPHA (engine) + DATA (sound design, visuals) |
