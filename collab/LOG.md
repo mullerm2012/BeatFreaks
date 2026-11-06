@@ -429,3 +429,35 @@ DATA OVER
 **For mullerm2012:** Nothing from PR #4 pushed directly to main; it awaits ALPHA review.
 
 DATA OVER
+
+---
+
+## 2026-11-06 — DATA (ChatGPT) — Approved squash merges and QA handoff
+
+**Did:** Under the owner's merge rules, squash-merged **PR #3** (ChatGPT DJ/music history in `collab/IDEAS.md` §7, commit `2d8d0bacc106394cbd9cf272fdb006ffddbe1f08`) and **PR #2** (OBS WebSocket v5 integration plan and collaboration handoff, commit `9dbd2a0ca2a3ee239d41b31b891ff39ea15c703d`) into `main`. ALPHA reviewed and approved both. They changed Markdown only and repository CI intentionally skipped them due to the workflow path exclusions. Resolved PR #2's LOG conflict without discarding newer ALPHA messages. No direct push to `main`.
+
+**Tested:** Confirmed both GitHub squash merges reported `merged=true` and verified the PR diffs/statuses. Not a runtime OBS or Windows test. **PR #4 art:** applied all three ALPHA review corrections (custom path-based lettering, bolt-only small app icon for 16/32px, waveform tail +8 local units), refreshed from latest `main` and requested ALPHA's second review; PR #4 remains unmerged. **PR #5 Smart Next:** reviewed engine and the new energy-analysis integration; ALPHA updated code to address borrowed suggestion pointers, half/double-time multiplier, ID and tie testing. On the latest inspected head `c71f8e2e403865967f7f1b656041c03950858dd0`, Ubuntu and Windows installer checks had started but were not yet fully green. No merge yet. **PR #1:** intentionally held pending owner's hardware/side-by-side test.
+
+**Next:** ALPHA to re-review PR #4 artwork. DATA to recheck *all* PR #5 checks on the same head, including Windows installer, before any squash merge; the owner retains the hardware test gate for #1. ALPHA to review and approve this log-only PR #6; DATA won't merge its own PR without that approval.
+
+**For ALPHA:** Smart Next weighting of key 32 / tempo 25 / energy 23 / crowd 12 / genre 8 is a reasonable initial default; suggest optional **138 BPM locked-tempo ±1%** mode for the owner's current club mix (not globally forced). Please review PR #4 and approve PR #6 when accurate.
+
+**For mullerm2012:** PRs #2 and #3 merged. PRs #1, #4 and #5 remain open at this entry; no direct `main` push. This log update is committed to PR #6 for ALPHA review.
+
+DATA OVER
+
+---
+
+## 2026-11-06 — DATA (ChatGPT) — Artwork PR #4 squash merge
+
+**Did:** Squash-merged ALPHA-approved PR #4 (original BeatFreaks SVG art source pack and small-icon/outline fixes), commit `378112f175215484bc5d945834954cd866464a07`, after synchronizing with latest main and preserving collaboration history.
+
+**Tested:** Verified GitHub returned merged=true; no PNG/ICO Windows installer or device tests yet. Follow-up export work remains on a different PR.
+
+**Next:** Complete the required PR #6 log rebase/merge under ALPHA's existing content approval; then review code PRs with the owner's all-green-checks/ALPHA-approval rule.
+
+**For ALPHA:** Art source #4 is merged. Preparing a separate PNG/ICO export PR.
+
+**For mullerm2012:** The artwork source is now in main; PR #1 remains on hardware-test hold.
+
+DATA OVER
