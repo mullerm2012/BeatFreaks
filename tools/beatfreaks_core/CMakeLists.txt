@@ -7,11 +7,11 @@ project(beatfreaks_core CXX)
 
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_AUTOMOC OFF)
+set(CMAKE_AUTOMOC ON)
 
 get_filename_component(MIXXX_SRC "${CMAKE_CURRENT_LIST_DIR}/../../src" ABSOLUTE)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Sql)
+find_package(Qt6 REQUIRED COMPONENTS Core Sql Network)
 find_package(GTest REQUIRED)
 
 add_library(beatfreaks_core STATIC
@@ -23,9 +23,15 @@ add_library(beatfreaks_core STATIC
   ${MIXXX_SRC}/beatfreaks/project/bfproject.cpp
   ${MIXXX_SRC}/beatfreaks/library/smartnext.cpp
   ${MIXXX_SRC}/beatfreaks/library/energystore.cpp
+  ${MIXXX_SRC}/beatfreaks/ai/songbrief.cpp
+  ${MIXXX_SRC}/beatfreaks/ai/acestepclient.cpp
+  ${MIXXX_SRC}/beatfreaks/ai/songinbox.cpp
 )
 target_include_directories(beatfreaks_core PUBLIC ${MIXXX_SRC})
-target_link_libraries(beatfreaks_core PUBLIC Qt6::Core Qt6::Sql)
+# Same as the real Mixxx build: string "a" + "b" makes a QStringBuilder, not a
+# QString. Without this, code that only compiles here can fail on Windows.
+target_compile_definitions(beatfreaks_core PUBLIC QT_USE_QSTRINGBUILDER)
+target_link_libraries(beatfreaks_core PUBLIC Qt6::Core Qt6::Sql Qt6::Network)
 if(MSVC)
   target_compile_options(beatfreaks_core PRIVATE /W4 /WX)
 else()
@@ -39,6 +45,9 @@ add_executable(beatfreaks_core_tests
   ${MIXXX_SRC}/test/beatfreaks/automation_edgecase_test.cpp
   ${MIXXX_SRC}/test/beatfreaks/smartnext_test.cpp
   ${MIXXX_SRC}/test/beatfreaks/energystore_test.cpp
+  ${MIXXX_SRC}/test/beatfreaks/songbrief_test.cpp
+  ${MIXXX_SRC}/test/beatfreaks/acestepclient_test.cpp
+  ${MIXXX_SRC}/test/beatfreaks/songinbox_test.cpp
 )
 target_link_libraries(beatfreaks_core_tests PRIVATE beatfreaks_core GTest::gtest GTest::gtest_main)
 
