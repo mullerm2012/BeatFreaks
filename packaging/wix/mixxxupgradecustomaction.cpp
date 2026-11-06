@@ -18,8 +18,9 @@ namespace {
 // {XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX}
 constexpr DWORD kMsiGuidBufferSize = 39;
 
-// Mixxx Upgrade GUID — same as CPACK_WIX_UPGRADE_GUID
-constexpr wchar_t kMixxxUpgradeCode[] = L"{921DC99C-4DCF-478D-B950-50685CB9E6BE}";
+// BeatFreaks Upgrade GUID — same as CPACK_WIX_UPGRADE_GUID (not Mixxx's,
+// so a real Mixxx installation is never touched)
+constexpr wchar_t kMixxxUpgradeCode[] = L"{57EBF230-413F-417E-B1D4-165290F285F3}";
 } // namespace
 
 extern "C"

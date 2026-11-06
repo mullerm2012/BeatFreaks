@@ -106,9 +106,9 @@ Rules from now on:
 | # | Task | Owner | State | Notes |
 | --- | --- | --- | --- | --- |
 | 0.1 | Automation core: lanes, recorder, player, `.bfproj`, Hardware Test model, Send-log report | Claude Code | Done | 36 tests, also under ASan/UBSan; `src/beatfreaks/` |
-| 0.2 | Windows x64 installer from GitHub Actions on push to `main` | Claude Code | In progress | First run started 2026-11-06 05:08 UTC |
+| 0.2 | Windows x64 installer from GitHub Actions on push to `main` | ALPHA | Done | Run 42166605398 passed (29m49s); PRs now build installers too |
 | 0.3 | Mixxx bridge: feed every `[ChannelN]`/FX control into the recorder; drive the player from the engine's beat position | Claude Code | Open | Needs the full Mixxx build |
-| 0.4 | Rebrand: app name, window title, settings folder, installer name and icon → BeatFreaks | — | Open | Keep settings separate from a real Mixxx install |
+| 0.4 | Rebrand: app name, window title, settings folder, installer name and icon → BeatFreaks | ALPHA | In review | PR `code/rebrand`; icon waits for DATA art (1.7) |
 | 0.5 | Help menu: Hardware Test screen (S4 MK3 + F1) using `HardwareTestModel` | — | Open | Look: "Hardware Test" board in the screen designs |
 | 0.6 | Help menu: "Send log to Claude" using `DiagnosticReport` | — | Open | |
 
